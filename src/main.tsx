@@ -1,0 +1,10 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { DemoProvider } from '@/context/demo-context';
+import { ErrorBoundary } from '@/components/error-boundary';
+import '@fontsource-variable/inter';
+import './index.css';
+import App from './App';
+ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><ErrorBoundary><BrowserRouter><TooltipProvider delayDuration={250}><DemoProvider><App /></DemoProvider></TooltipProvider></BrowserRouter></ErrorBoundary></React.StrictMode>);

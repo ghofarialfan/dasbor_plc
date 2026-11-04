@@ -1,0 +1,11 @@
+import * as React from 'react';
+import * as Primitive from '@radix-ui/react-dropdown-menu';
+import { cn } from '@/lib/utils';
+export const DropdownMenu = Primitive.Root;
+export const DropdownMenuTrigger = Primitive.Trigger;
+export const DropdownMenuLabel = Primitive.Label;
+export const DropdownMenuSeparator = () => <Primitive.Separator className="my-1 h-px bg-border" />;
+export const DropdownMenuContent = React.forwardRef<React.ElementRef<typeof Primitive.Content>, React.ComponentPropsWithoutRef<typeof Primitive.Content>>(({ className, sideOffset = 8, ...props }, ref) => <Primitive.Portal><Primitive.Content ref={ref} sideOffset={sideOffset} className={cn('z-50 max-h-[70dvh] min-w-48 max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-border bg-white p-2 text-foreground shadow-lg', className)} {...props} /></Primitive.Portal>);
+DropdownMenuContent.displayName = 'DropdownMenuContent';
+export const DropdownMenuItem = React.forwardRef<React.ElementRef<typeof Primitive.Item>, React.ComponentPropsWithoutRef<typeof Primitive.Item>>(({ className, ...props }, ref) => <Primitive.Item ref={ref} className={cn('flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm outline-none focus:bg-slate-100', className)} {...props} />);
+DropdownMenuItem.displayName = 'DropdownMenuItem';
