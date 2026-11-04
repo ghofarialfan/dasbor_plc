@@ -21,4 +21,4 @@ function useDemoState() {
 type DemoState = ReturnType<typeof useDemoState>;
 const DemoContext = createContext<DemoState | null>(null);
 export function DemoProvider({ children }: { children: ReactNode }) { const state = useDemoState(); return <DemoContext.Provider value={state}>{children}</DemoContext.Provider>; }
-export function useDemo() { const ctx = useContext(DemoContext); if (!ctx) throw new Error('DemoProvider is required'); return ctx; }
+export function useDemo() { const ctx = useContext(DemoContext); if (!ctx) throw new Error('Provider tidak tersedia'); return ctx; }

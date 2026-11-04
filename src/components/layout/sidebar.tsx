@@ -13,7 +13,8 @@ export function Sidebar({ collapsed = false, onCollapse, onNavigate }: { collaps
         return collapsed ? <Hint label={item.label} key={item.path}>{link}</Hint> : <div key={item.path}>{link}</div>;
       })}</nav>
     </div>
-    {!collapsed && <div className="mx-4 mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3"><div className="flex items-center gap-2 text-xs font-medium text-slate-200"><ShieldCheck size={16} className="text-blue-300" />Frontend prototype</div><p className="mt-2 text-[10px] leading-relaxed text-slate-400">Simulasi lokal. Tidak terhubung ke PLC atau perangkat nyata.</p></div>}
+    {!collapsed && <div className="mx-4 mb-4 rounded-xl border border-white/10 bg-white/[0.03] p-3"><div className="flex items-center gap-2 text-xs font-medium text-slate-200"><ShieldCheck size={16} className="text-blue-300" />Frontend prototype</div><p className="mt-2 text-[10px] leading-relaxed text-slate-400">Tidak terhubung ke PLC atau perangkat nyata.</p></div>}
+    {collapsed && <div className="flex justify-center pb-4"><Hint label="Frontend prototype"><button aria-label="Frontend prototype" className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/[0.03] text-blue-300 hover:text-white"><ShieldCheck size={16} /></button></Hint></div>}
     {onCollapse && <button onClick={onCollapse} aria-label={collapsed ? 'Perluas sidebar' : 'Ciutkan sidebar'} className="flex h-12 shrink-0 items-center justify-center gap-2 border-t border-white/10 text-xs text-slate-400 hover:text-white">{collapsed ? <ChevronRight size={16} /> : <><ChevronLeft size={16} />Ciutkan menu</>}</button>}
   </div>;
 }

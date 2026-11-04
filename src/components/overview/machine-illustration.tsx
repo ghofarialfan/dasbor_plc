@@ -14,12 +14,12 @@ export function MachineIllustration({ selectedId, onSelect }: EquipmentViewProps
   const available = equipment.filter(e => e.deviceId === device.id);
   const warning = filteredAlarms.some(a => a.deviceId === device.id && a.parameter === 'motorTemperature');
   return <div className="space-y-3 pb-4">
-    <p className="text-xs font-semibold text-muted">Ilustrasi konseptual — bukan gambar OEM</p>
+    <p className="text-xs font-semibold text-muted">Ilustrasi skematik</p>
     <p className="text-xs leading-relaxed text-muted">Identitas item 3–9: Keterangan rekan proyek. Deret 2 → 3 → 4/5 → 6 → 7 konseptual, bukan detail kopling. Geser dan pilih komponen untuk detail.</p>
     <div className="flex flex-wrap items-center gap-2 text-xs">
-      <span className="text-muted">Animasi status simulasi · M-301: {ventilationFanStatusLabels[fanStatus]}</span>
-      <button type="button" aria-pressed={fanPaused} onClick={() => setFanPaused(value => !value)} className="rounded-lg border border-border px-3 py-2 hover:bg-blue-50">{fanPaused ? 'Lanjutkan efek visual kipas' : 'Jeda efek visual kipas'}</button>
-      <span className="text-muted">Bukan kontrol mesin · kecepatan dekoratif, bukan RPM terukur. Preferensi kurangi gerakan menonaktifkan putaran.</span>
+      <span className="text-muted">M-301: {ventilationFanStatusLabels[fanStatus]}</span>
+      <button type="button" aria-pressed={fanPaused} onClick={() => setFanPaused(value => !value)} className="rounded-lg border border-border px-3 py-2 hover:bg-blue-50">{fanPaused ? 'Lanjutkan animasi' : 'Jeda animasi'}</button>
+      <span className="text-muted">Preferensi tampilan · kecepatan animasi tidak mewakili RPM. Preferensi kurangi gerakan menonaktifkan putaran.</span>
     </div>
     <div className="max-w-full overflow-x-auto rounded-xl border border-border bg-slate-50" role="region" aria-label="Ilustrasi mesin interaktif, dapat digeser" tabIndex={0}>
       <svg viewBox="0 0 1550 350" className="block w-full min-w-[1200px]" aria-label="Motor, gearbox, alternator dan kipas ventilasi konseptual">
@@ -49,14 +49,14 @@ export function MachineIllustration({ selectedId, onSelect }: EquipmentViewProps
             </>}
             <circle cx="9" cy="-17" r="14" fill="#233d60" /><text x="9" y="-12" textAnchor="middle" fontSize="13" fill="white">{e.item}</text>
             <text x="60" y="117" textAnchor="middle" fontSize="14" fill="#233d60" fontWeight="600">{e.name}</text>
-            {id === 'motor' && warning && <text x="0" y="140" fontSize="13" fill="#92400e">⚠ TT-02 warning demo</text>}
+            {id === 'motor' && warning && <text x="0" y="140" fontSize="13" fill="#92400e">⚠ TT-02 peringatan</text>}
             {active && <g pointerEvents="none"><rect x="-8" y="-69" width="144" height="28" rx="6" fill="#233d60" /><text x="64" y="-50" textAnchor="middle" fontSize="12" fill="white">{e.name} · item {e.item}</text></g>}
           </g></DialogTrigger>;
         })}
         <DialogTrigger asChild><g role="button" tabIndex={0} aria-label={`Kipas ventilasi M-301, ${ventilationFanStatusLabels[fanStatus]}. Buka detail`} onClick={event => { event.currentTarget.focus(); onSelect('ventilation'); }} onKeyDown={event => {
           if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.currentTarget.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
         }} onMouseEnter={() => setHovered('ventilation')} onMouseLeave={() => setHovered('')} onFocus={() => setHovered('ventilation')} onBlur={() => setHovered('')} className="machine-part cursor-pointer">
-          <title>Kipas ventilasi M-301 · {ventilationFanStatusLabels[fanStatus]} · posisi dinding konseptual, bukan OEM</title>
+          <title>Kipas ventilasi M-301 · {ventilationFanStatusLabels[fanStatus]}</title>
           <rect x="1320" y="98" width="210" height="170" rx="10" fill={hovered === 'ventilation' || selectedId === 'ventilation' ? '#eff6ff' : '#edf2f7'} stroke={hovered === 'ventilation' || selectedId === 'ventilation' ? '#2563eb' : '#94a3b8'} strokeWidth="3" />
           <text x="1425" y="85" textAnchor="middle" fontSize="13" fill="#64748b">Dinding ventilasi konseptual</text>
           <circle cx="1425" cy="168" r="52" fill="#dbe5ef" stroke="#466389" strokeWidth="3" />
@@ -71,6 +71,6 @@ export function MachineIllustration({ selectedId, onSelect }: EquipmentViewProps
     </div>
     <div className="rounded-xl border border-blue-100 bg-blue-50/30 p-3"><p className="mb-2 text-xs font-semibold">Cabang listrik: Alternator 7 → CB-01 → output 17 · PM-01 pengukuran, bukan konversi</p><div className="flex flex-wrap gap-2">{['alternator', 'breaker', 'output'].map(id => { const e = available.find(entry => entry.id === id)!; return <DialogTrigger asChild key={id}><button onClick={() => onSelect(id)} className={`rounded-lg border bg-white px-3 py-2 text-xs hover:bg-blue-50 ${selectedId === id ? 'border-blue-500' : 'border-border'}`}>{e.name} · {e.item}</button></DialogTrigger>; })}</div></div>
     <div className="flex flex-wrap gap-2">{['pv', 'cabinet', 'bldc', 'shaft-train', 'oil19', 'oil20', 'pump', 'ventilation', 'pmg', 'avr'].map(id => { const e = available.find(entry => entry.id === id)!; return <DialogTrigger asChild key={id}><button onClick={() => onSelect(id)} className={`rounded-lg border px-3 py-2 text-xs hover:bg-blue-50 ${selectedId === id ? 'border-blue-500 bg-blue-50' : 'border-border'}`}>{e.name} · {e.item}</button></DialogTrigger>; })}</div>
-    <p className="text-[11px] leading-relaxed text-muted">Garis poros putus-putus menunjukkan deret, bukan kopling terverifikasi. Gearbox 8/9 tanpa sambungan atau arah daya. PMG/AVR tetap asumsi. Motor 6: Instrumen belum dipetakan. Hanya bilah kipas M-301 yang dianimasikan; motor, gearbox dan alternator tetap diam. Status kipas mock terpisah dari genset: berhenti tidak disimpulkan dari standby.</p>
+    <p className="text-[11px] leading-relaxed text-muted">Garis poros putus-putus menunjukkan deret, bukan kopling terverifikasi. Gearbox 8/9 tanpa sambungan atau arah daya. PMG/AVR tetap asumsi. Motor 6: Instrumen belum dipetakan. Hanya bilah kipas M-301 yang dianimasikan; motor, gearbox dan alternator tetap diam. Status kipas tidak diturunkan dari status genset: berhenti tidak disimpulkan dari standby.</p>
   </div>;
 }
