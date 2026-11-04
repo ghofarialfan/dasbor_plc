@@ -73,3 +73,13 @@ Kualitas data terpisah: `simulated`, `not-simulated`, `offline`, `no-current-dat
 `npm run typecheck`, `npm run test:data`, `npm run build`. Test mencakup fleet/filter, mapping tag, identitas per device, data hilang, status digital, unit AT-301, TT-07, urutan/cabang flow, kepastian, dan RPM/Hz independen. Browser fungsional belum tersedia; responsivitas, scrollbar diagram, fokus dialog, serta viewport 390/768/1440 px perlu review manual. Diagram memakai ukuran node tetap dan area geser, bukan mengecilkan teks. Gauge memakai grid 1/2/3 kolom.
 
 Tidak ada backend, PLC, perintah perangkat, deployment, atau Milestone 2.
+
+## M2–M5: perluasan dan konflik P-201
+
+PDF menyebut P-201 sebagai salah satu item 4/5/8/9; klarifikasi rekan proyek menyebut seluruh item tersebut gearbox. **Tidak ada pasangan fisik P-201 ke item angka mana pun.** P-201 memakai tag equipment tersendiri; UI: "lokasi fisik belum dikonfirmasi". Jalur oli hanya alur fungsi, bukan posisi fisik, ukuran pipa, tekanan atau spesifikasi valve.
+
+Virtual memisahkan penggerak/output, oli, ventilasi, dan keamanan; tidak mengganti layout Overview. Instrumen PV-01, PRT-01, TT-10/ST-10, PDT-201/TT-201, TT-301/304/PDT-301, ES-01/SIR-01/GPS-01/DNG-01/SPD-01 ditambahkan dari daftar teks draf; tanpa angka pembacaan baru. Manifold 15 tetap TBD. TT-201 dikelompokkan bersama sistem tangki oli untuk tampilan, bukan verifikasi pemasangan sensor. ES-01 hardwired di luar logika PLC, bukan tombol frontend.
+
+Copy M1.5 memakai "Ilustrasi skematik", "Belum ada data", "Pembaruan terakhir". Kepastian dan sumber disimpan di Status desain pada detail, bukan dihapus. Ambang peringatan 35 °C bukan batas proteksi PLC. M-301 memakai status visual independen; running berputar, offline/unknown/stopped diam. Pernyataan lama di atas mengenai "tidak ada simulasi putaran" dan "tidak ada Milestone 2" sudah digantikan oleh implementasi M-301 dan M2–M5.
+
+Data/chart memakai generator deterministik 7 hari yang sama, bukan histori mesin. CSV prototype mengekspor null sebagai kosong, bukan 0. README menjelaskan semua batasan. PDF sumber tidak diubah.
