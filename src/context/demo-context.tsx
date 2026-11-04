@@ -1,7 +1,13 @@
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import { alarms, activities, devicesForSite, deviceForSite, sites } from '@/data/demo';
+import { loadJSON, saveJSON } from '@/lib/storage';
 
-function storedSite() { try { const value = localStorage.getItem('genset-demo-site'); return sites.some(s => s.id === value) ? value! : 'all'; } catch { return 'all'; } }
+function storedSite() {
+  const current = loadJSON<string>('site', 'all', (v): v is string => typeof v === 'string' && sites.some(s => s.id === v));
+  if (current !== 'all') return current;
+  try { const legacy = localStorage.getItem('genset-demo-site'); if (legacy && sites.some(s => s.id === legacy)) { saveJSON('site', legacy); return legacy; } } catch { /* ignore */ }
+  return 'all';
+}
 function useDemoState() {
   const [siteId, setSiteId] = useState(storedSite);
   const [selectedId, setSelectedId] = useState('GEN-001');
@@ -13,7 +19,7 @@ function useDemoState() {
   const setSite = (id: string) => {
     if (id !== 'all' && !sites.some(s => s.id === id)) return;
     setSiteId(id);
-    try { localStorage.setItem('genset-demo-site', id); setStorageError(false); } catch { setStorageError(true); }
+    setStorageError(!saveJSON('site', id));
   };
   const selectDevice = (id: string) => { if (ids.has(id)) setSelectedId(id); };
   return { siteId, setSite, device, selectDevice, filteredDevices, filteredAlarms: alarms.filter(a => ids.has(a.deviceId)), filteredActivities: activities.filter(a => ids.has(a.deviceId)), storageError };
