@@ -110,6 +110,16 @@ assert.ok(flowLinks.some(l => l.from === 'alternator' && l.to === 'breaker' && l
 assert.ok(flowLinks.some(l => l.from === 'breaker' && l.to === 'output'));
 assert.ok(!flowLinks.some(l => ['gearbox8', 'gearbox9'].includes(l.from) && l.kind === 'electrical'));
 assert.ok(!equipmentDefinitions.some(e => e.id === 'PM-01'), 'meter is not a power converter');
+// M2: P-201 stays unmapped to any numbered item; subsystems are present; security/oil/ventilation instruments exist.
+const pump = equipmentDefinitions.find(e => e.id === 'pump');
+assert.equal(pump.item, 'P-201');
+assert.ok(!mainSequence.includes('pump'));
+assert.ok(pump.notes.includes('Lokasi fisik belum dikonfirmasi'));
+for (const id of ['prt', 'estop', 'siren', 'gps', 'dongle', 'spd', 'hv201', 's201', 'cv201', 'f201', 'manifold15', 'lv301', 'f301', 'lv302']) assert.ok(equipmentDefinitions.some(e => e.id === id), id);
+for (const tag of ['PV-01', 'PRT-01', 'TT-10', 'ST-10', 'PDT-201', 'TT-201', 'TT-301', 'TT-304', 'PDT-301', 'ES-01', 'SIR-01', 'GPS-01', 'DNG-01', 'SPD-01']) assert.ok(instrumentDefinitions.some(i => i.tag === tag), tag);
+const es01 = instrumentDefinitions.find(i => i.tag === 'ES-01');
+assert.equal(es01.valueType, 'digital');
+assert.ok(es01.notes.includes('Hardwired, di luar logika PLC'));
 const { ventilationFanMocks, ventilationFanStatus, ventilationFanRotates } = data;
 assert.deepEqual(devices.map(d => ventilationFanStatus(d)), ['running', 'running', 'stopped', 'offline']);
 assert.deepEqual(devices.map(d => ventilationFanRotates(ventilationFanStatus(d))), [true, true, false, false]);
