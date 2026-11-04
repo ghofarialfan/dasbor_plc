@@ -3,10 +3,12 @@ import type { ReactNode } from 'react';
 import { AppShell } from '@/components/layout/app-shell';
 import { Overview } from '@/pages/overview';
 import { DevicePage } from '@/pages/device';
+import { VirtualPage } from '@/pages/virtual';
 import { Placeholder } from '@/pages/placeholder';
 
 const pages: Record<string, ReactNode> = {
   '/device': <DevicePage />,
+  '/virtual': <VirtualPage />,
 };
 
 export default function App() {
