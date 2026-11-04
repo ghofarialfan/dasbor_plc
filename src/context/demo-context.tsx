@@ -1,14 +1,21 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { alarms, activities, devicesForSite, deviceForSite, sites } from '@/data/demo';
+import { preferences } from '@/lib/preferences';
 import { loadJSON, saveJSON } from '@/lib/storage';
 
 function storedSite() {
-  const current = loadJSON<string>('site', 'all', (v): v is string => typeof v === 'string' && sites.some(s => s.id === v));
-  if (current !== 'all') return current;
-  try { const legacy = localStorage.getItem('genset-demo-site'); if (legacy && sites.some(s => s.id === legacy)) { saveJSON('site', legacy); return legacy; } } catch { /* ignore */ }
-  return 'all';
+  try {
+    if (localStorage.getItem('genset-demo:v1:site') === null) {
+      const legacy = localStorage.getItem('genset-demo-site');
+      if (legacy && sites.some(s => s.id === legacy)) saveJSON('site', legacy);
+      localStorage.removeItem('genset-demo-site');
+    }
+  } catch { /* Storage unavailable: validated fallback below. */ }
+  return loadJSON<string>('site', 'all', (v): v is string => v === 'all' || sites.some(s => s.id === v));
 }
 function useDemoState() {
+  const [prefs, setPrefs] = useState(preferences);
+  useEffect(() => { const update = () => setPrefs(preferences()); window.addEventListener('preferences-changed', update); return () => window.removeEventListener('preferences-changed', update); }, []);
   const [siteId, setSiteId] = useState(storedSite);
   const [selectedId, setSelectedId] = useState('GEN-001');
   const [storageError, setStorageError] = useState(false);
@@ -22,7 +29,7 @@ function useDemoState() {
     setStorageError(!saveJSON('site', id));
   };
   const selectDevice = (id: string) => { if (ids.has(id)) setSelectedId(id); };
-  return { siteId, setSite, device, selectDevice, filteredDevices, filteredAlarms: alarms.filter(a => ids.has(a.deviceId)), filteredActivities: activities.filter(a => ids.has(a.deviceId)), storageError };
+  return { preferences: prefs, siteId, setSite, device, selectDevice, filteredDevices, filteredAlarms: alarms.filter(a => ids.has(a.deviceId)), filteredActivities: activities.filter(a => ids.has(a.deviceId)), storageError };
 }
 type DemoState = ReturnType<typeof useDemoState>;
 const DemoContext = createContext<DemoState | null>(null);
