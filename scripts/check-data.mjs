@@ -25,7 +25,7 @@ assert.equal(devices[3].status, 'unknown');
 assert.ok(Date.parse(devices[3].lastSeen) < Date.parse(DEMO_NOW));
 for (const d of devices) {
   const samples = trends[d.id];
-  assert.equal(samples.length, 73);
+  assert.equal(samples.length, 7 * 24 * 12 + 1);
   assert.equal(samples.at(-1).timestamp, DEMO_NOW);
   for (const key of ['rpm', 'voltage', 'frequency', 'motorTemperature']) assert.equal(samples.at(-1)[key], d.telemetry[key]);
   for (const hours of [1, 3, 6]) assert.equal(samples.slice(-(hours * 12 + 1)).length, hours * 12 + 1);

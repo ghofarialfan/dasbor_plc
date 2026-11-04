@@ -156,11 +156,13 @@ export function readingsForInstrument(device: Device, tag: string): InstrumentRe
   return instrument.parameters.map(parameter => ({ deviceId: device.id, tag, parameter, value: device.online ? device.telemetry[parameter] : null, unit: parameters[parameter].unit, quality: parameterQuality(device, parameter) }));
 }
 // Fixed formula, evaluated once. Each channel is illustrative and independent.
-export const trends: Record<string, TrendSample[]> = Object.fromEntries(devices.map((d, di) => [d.id, Array.from({ length: 73 }, (_, i) => {
+export const TREND_TOTAL = 7 * 24 * 12 + 1; // 7 days at 5-minute resolution, ending at DEMO_NOW.
+export const trends: Record<string, TrendSample[]> = Object.fromEntries(devices.map((d, di) => [d.id, Array.from({ length: TREND_TOTAL }, (_, i) => {
+  const last = TREND_TOTAL - 1;
   const variation = Math.sin(i * 0.68 + di) * 0.65 + Math.sin(i * 1.7) * 0.2;
   const val = (key: 'rpm' | 'voltage' | 'frequency' | 'motorTemperature', scale: number) => {
     const base = d.telemetry[key];
-    return base === null ? null : base === 0 || i === 72 ? base : Number((base + variation * scale).toFixed(2));
+    return base === null ? null : base === 0 || i === last ? base : Number((base + variation * scale).toFixed(2));
   };
-  return { timestamp: ago((72 - i) * 5), rpm: val('rpm', 7), voltage: val('voltage', 3), frequency: val('frequency', 0.12), motorTemperature: val('motorTemperature', 0.8) };
+  return { timestamp: ago((last - i) * 5), rpm: val('rpm', 7), voltage: val('voltage', 3), frequency: val('frequency', 0.12), motorTemperature: val('motorTemperature', 0.8) };
 })]));
