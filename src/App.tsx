@@ -8,6 +8,10 @@ import { DataPage } from '@/pages/data';
 import { GaugeWidgetPage } from '@/pages/gauge-widget';
 import { ChartWidgetPage } from '@/pages/chart-widget';
 import { CameraViewPage } from '@/pages/camera-view';
+import { NewsPage } from '@/pages/news';
+import { SupportPage } from '@/pages/support';
+import { ProfilePage } from '@/pages/profile';
+import { LogoutPage } from '@/pages/logout';
 import { Placeholder } from '@/pages/placeholder';
 
 const pages: Record<string, ReactNode> = {
@@ -17,6 +21,10 @@ const pages: Record<string, ReactNode> = {
   '/gauge-widget': <GaugeWidgetPage />,
   '/chart-widget': <ChartWidgetPage />,
   '/camera-view': <CameraViewPage />,
+  '/news': <NewsPage />,
+  '/support': <SupportPage />,
+  '/profile': <ProfilePage />,
+  '/logout': <LogoutPage />,
 };
 
 export default function App() {
