@@ -12,7 +12,7 @@ const BANNED = ['dummy', 'mock', 'simulasi', 'simulated', 'contoh', 'fake', 'dem
 // Code-only string literals that legitimately contain a banned token but are
 // never shown to users (enum/status values, storage keys).
 const ALLOWED_LITERALS = new Set(['simulated', 'not-simulated', 'no-current-data', 'genset-demo-site']);
-const ALLOWED_PREFIXES = [/^@\//, /^genset-demo:/, /^genset-demo-/];
+const ALLOWED_PREFIXES = [/^@\//, /^genset-demo/];
 
 function collectFiles(dir) {
   const out = [];

@@ -1,4 +1,4 @@
-import type { Activity, Alarm, Device, Parameter, Telemetry, TrendSample, EquipmentDefinition, Equipment, InstrumentDefinition, Instrument, FlowLink, InstrumentReading, DataQuality, VentilationFanStatus, VentilationFanMockStatus } from '@/types';
+import type { Activity, Alarm, Device, Parameter, Telemetry, TrendSample, EquipmentDefinition, Equipment, InstrumentDefinition, Instrument, FlowLink, InstrumentReading, DataQuality, VentilationFanStatus, VentilationFanMockStatus, NewsItem, SupportTicket } from '@/types';
 
 export const certaintyLabels = { documented: 'Tercantum di draf', clarified: 'Keterangan rekan proyek', assumed: 'Asumsi', tbd: 'TBD' };
 export const qualityLabels: Record<DataQuality, string> = { simulated: 'Nilai terbaru', 'not-simulated': 'Belum ada data', offline: 'Offline', 'no-current-data': 'Belum ada data terkini' };
@@ -96,6 +96,17 @@ export const activities: Activity[] = [
   { id: 'a2', deviceId: 'GEN-001', title: 'Generator beroperasi', description: 'Unit beroperasi.', timestamp: ago(18), kind: 'success' },
   { id: 'a3', deviceId: 'GEN-003', title: 'Mode standby', description: 'Unit dalam kondisi standby.', timestamp: ago(42), kind: 'success' },
   { id: 'a4', deviceId: 'GEN-004', title: 'Data tidak tersedia', description: 'Tidak ada data terkini dari unit.', timestamp: ago(125), kind: 'offline' },
+];
+export const newsItems: NewsItem[] = [
+  { id: 'n1', category: 'operasional', title: 'Pembaruan jadwal inspeksi', body: 'Inspeksi rutin unit GEN-001 dijadwalkan ulang. Pantau daftar tiket untuk tindak lanjut.', timestamp: ago(60 * 6) },
+  { id: 'n2', category: 'pemeliharaan', title: 'Pengecekan filter udara', body: 'Filter udara pada sistem ventilasi direkomendasikan untuk dicek pada siklus berikutnya.', timestamp: ago(60 * 26) },
+  { id: 'n3', category: 'keselamatan', title: 'Prosedur emergency stop', body: 'ES-01 berfungsi sebagai penghentian darurat hardwired, di luar logika PLC.', timestamp: ago(60 * 50) },
+  { id: 'n4', category: 'umum', title: 'Pembaruan antarmuka', body: 'Tampilan subsistem dan tabel data tersedia pada ruang kerja.', timestamp: ago(60 * 74) },
+  { id: 'n5', category: 'operasional', title: 'Catatan ambang peringatan', body: 'Ambang peringatan suhu motor ditampilkan sebagai nilai rujukan, bukan batas proteksi PLC.', timestamp: ago(60 * 100) },
+];
+export const seedTickets: SupportTicket[] = [
+  { id: 't1', title: 'Periksa suhu motor GEN-002', unit: 'GEN-002', category: 'Pemeliharaan', description: 'Suhu motor melewati ambang peringatan pada tabel parameter.', status: 'open', createdAt: ago(60 * 5) },
+  { id: 't2', title: 'Konfirmasi lokasi P-201', unit: 'GEN-001', category: 'Dokumentasi', description: 'Lokasi fisik pompa oli P-201 belum dikonfirmasi pada P&ID.', status: 'open', createdAt: ago(60 * 30) },
 ];
 export const parameters: Record<Parameter, { label: string; tag: string; unit: string; max: number }> = {
   rpm: { label: 'RPM poros · ST-401', tag: 'ST-401', unit: 'rpm', max: 1000 },

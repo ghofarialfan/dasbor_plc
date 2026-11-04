@@ -46,3 +46,6 @@ export interface Activity { id: string; deviceId: string; title: string; descrip
 export interface TrendSample { timestamp: string; rpm: number | null; voltage: number | null; frequency: number | null; motorTemperature: number | null }
 export interface GaugeWidgetConfig { id: string; deviceId: string; parameter: Parameter; title: string }
 export interface Ticket { id: string; title: string; description: string; status: 'open' | 'resolved'; createdAt: string }
+export type NewsCategory = 'operasional' | 'pemeliharaan' | 'keselamatan' | 'umum';
+export interface NewsItem { id: string; category: NewsCategory; title: string; body: string; timestamp: string }
+export interface SupportTicket { id: string; title: string; unit: string; category: string; description: string; relatedAlarm?: string; status: 'open' | 'resolved'; createdAt: string }
