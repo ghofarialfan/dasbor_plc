@@ -1,4 +1,6 @@
 export type OperatingStatus = 'running' | 'standby' | 'unknown';
+export type VentilationFanStatus = 'running' | 'stopped' | 'offline' | 'unknown' | 'not-simulated';
+export type VentilationFanMockStatus = Exclude<VentilationFanStatus, 'offline'>;
 export type Parameter = 'rpm' | 'voltage' | 'frequency' | 'motorTemperature' | 'roomTemperature' | 'bldcTemperature';
 export type Certainty = 'documented' | 'clarified' | 'assumed' | 'tbd';
 export type IdentitySource = 'pid-draft' | 'project-colleague';

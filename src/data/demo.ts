@@ -1,4 +1,4 @@
-import type { Activity, Alarm, Device, Parameter, Telemetry, TrendSample, EquipmentDefinition, Equipment, InstrumentDefinition, Instrument, FlowLink, InstrumentReading, DataQuality } from '@/types';
+import type { Activity, Alarm, Device, Parameter, Telemetry, TrendSample, EquipmentDefinition, Equipment, InstrumentDefinition, Instrument, FlowLink, InstrumentReading, DataQuality, VentilationFanStatus, VentilationFanMockStatus } from '@/types';
 
 export const certaintyLabels = { documented: 'Tercantum di draf', clarified: 'Keterangan rekan proyek', assumed: 'Asumsi', tbd: 'TBD' };
 export const qualityLabels: Record<DataQuality, string> = { simulated: 'Nilai simulasi', 'not-simulated': 'Belum disimulasikan', offline: 'Offline', 'no-current-data': 'No current data' };
@@ -14,6 +14,20 @@ export const devices: Device[] = [
   { id: 'GEN-003', name: 'Backup Generator', siteId: 'site-a', location: 'Power house · Bay 03', status: 'standby', online: true, lastSeen: DEMO_NOW, telemetry: { ...nominal, rpm: 0, voltage: 0, frequency: 0, motorTemperature: 27 } },
   { id: 'GEN-004', name: 'Reserve Generator', siteId: 'site-b', location: 'Utility room · Bay 04', status: 'unknown', online: false, lastSeen: ago(125), telemetry: { ...empty } },
 ];
+// Independent visual mock, not inferred from genset status, RPM, or TT-303.
+export const ventilationFanMocks: Record<string, VentilationFanMockStatus> = {
+  'GEN-001': 'running', 'GEN-002': 'running', 'GEN-003': 'stopped', 'GEN-004': 'unknown',
+};
+export const ventilationFanStatusLabels: Record<VentilationFanStatus, string> = {
+  running: 'Berjalan (running)', stopped: 'Berhenti (stopped)', offline: 'Offline',
+  unknown: 'Tidak diketahui (unknown)', 'not-simulated': 'Belum disimulasikan',
+};
+export function ventilationFanStatus(device: Pick<Device, 'id' | 'online'>, mocks: Readonly<Record<string, VentilationFanMockStatus>> = ventilationFanMocks): VentilationFanStatus {
+  return device.online ? mocks[device.id] ?? 'not-simulated' : 'offline';
+}
+export function ventilationFanRotates(status: VentilationFanStatus, paused = false) {
+  return status === 'running' && !paused;
+}
 export function devicesForSite(siteId: string) { return devices.filter(d => siteId === 'all' || d.siteId === siteId); }
 export function deviceForSite(siteId: string, selectedId: string) {
   const available = devicesForSite(siteId);
@@ -94,7 +108,7 @@ export const instrumentDefinitions: InstrumentDefinition[] = [
   { tag: 'VFD-12', name: 'Driver BLDC', equipmentId: 'cabinet', function: 'Driver BLDC item 12 di kabinet 13.', certainty: 'documented', signal: 'AO, DO, DI', valueType: 'unresolved', parameters: [], notes: 'Tidak ada command perangkat.' },
   { tag: 'CB-01', name: 'Breaker output', equipmentId: 'breaker', function: 'Status dan trip breaker output.', certainty: 'documented', signal: 'DO, DI', valueType: 'digital', parameters: [], notes: 'Tidak ada command open/close.' },
   { tag: 'AVR-01', name: 'Pengatur eksitasi', equipmentId: 'avr', function: 'Pengaturan tegangan dan eksitasi.', certainty: 'assumed', signal: 'AO, Modbus, DI', valueType: 'unresolved', parameters: [], notes: 'Fungsi terkait PMG masih asumsi.' },
-  { tag: 'M-301', name: 'Kipas ventilasi', equipmentId: 'ventilation', function: 'Ventilasi paksa ruang unit.', certainty: 'documented', signal: 'AO, DI', valueType: 'unresolved', parameters: [], notes: 'Tidak ada kecepatan/status kipas simulasi.' },
+  { tag: 'M-301', name: 'Kipas ventilasi', equipmentId: 'ventilation', function: 'Ventilasi paksa ruang unit.', certainty: 'documented', signal: 'AO, DI', valueType: 'unresolved', parameters: [], notes: 'Status mock M-301 terpisah untuk ilustrasi; bukan pembacaan instrumen atau RPM terukur. Tidak ada command perangkat.' },
   { tag: 'DMP-301', name: 'Damper ventilasi', equipmentId: 'ventilation', function: 'Pengaturan damper ventilasi.', certainty: 'documented', signal: 'AO', valueType: 'analog', parameters: [], notes: 'Tidak ada posisi damper simulasi.' },
 ];
 export const equipment: Equipment[] = devices.flatMap(d => equipmentDefinitions.map(e => ({ ...e, deviceId: d.id, instanceId: `${d.id}:${e.id}` })));

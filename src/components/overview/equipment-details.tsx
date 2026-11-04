@@ -1,5 +1,5 @@
 import { useDemo } from '@/context/demo-context';
-import { equipment, instrumentsForEquipment, certaintyLabels, qualityLabels, readingsForInstrument, parameters } from '@/data/demo';
+import { equipment, instrumentsForEquipment, certaintyLabels, qualityLabels, readingsForInstrument, parameters, ventilationFanStatus, ventilationFanStatusLabels } from '@/data/demo';
 import { number } from '@/lib/utils';
 import { DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { CertaintyBadge } from '@/components/shared';
@@ -16,6 +16,7 @@ export function EquipmentDetails({ selectedId, restoreFocus }: { selectedId: str
       <p>Sumber identitas: {(selected.identitySources ?? ['pid-draft']).map(s => s === 'project-colleague' ? 'Keterangan rekan proyek' : 'PDF P&ID Genset PLTS (draf)').join(' + ')}</p>
       {selected.draftIdentity && <p className="text-muted">Catatan draf PDF (tidak diubah): {selected.draftIdentity}</p>}
       <p>{selected.function}</p><p className="text-muted">Belum pasti / batasan: {selected.notes}</p>
+      {selectedId === 'ventilation' && <section className="space-y-2 rounded-xl border border-border p-3"><h4 className="font-semibold">M-301 · Animasi status simulasi</h4><p>Status kipas mock: <strong>{ventilationFanStatusLabels[ventilationFanStatus(device)]}</strong></p><p className="text-muted">Status terpisah dari genset dan TT-303; berhenti tidak disimpulkan dari standby. Kecepatan animasi dekoratif, bukan RPM terukur. Jeda/lanjut hanya efek visual, bukan kontrol mesin.</p></section>}
       {!associated.length && <p>Instrumen belum dipetakan · Nilai: —</p>}
       {associated.map(i => <section key={i.instanceId} className="space-y-2 rounded-xl border border-border p-3">
         <h4 className="font-semibold">{i.tag} · {i.name}</h4><p>{i.function}</p>
