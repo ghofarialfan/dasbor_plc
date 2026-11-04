@@ -484,7 +484,7 @@ Tambah component/E2E test bila alat disepakati; uji offline/stale/null, invalid 
 ### 13.3 Dokumen yang dibaca bersama
 
 - `README.md`: menjalankan, fitur dan batasan.
-- `docs/SERAH-TERIMA-PROYEK.md`: perjalanan dan konteks lengkap (dokumen ini).
+- `docs/hapid.md`: perjalanan dan konteks lengkap (dokumen ini).
 - `docs/PID-MAPPING.md`: provenance, mapping dan konflik desain.
 - `docs/BACKLOG.md`: pekerjaan yang ditunda.
 - `docs/REVIEW-CHECKLIST.md`: review manual detail.
