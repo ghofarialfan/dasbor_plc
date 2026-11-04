@@ -1,3 +1,4 @@
+import { filterDevices } from '@/data/queries';
 import { useMemo, useState } from 'react';
 import { LayoutGrid, List, Search, MapPin, Radio } from 'lucide-react';
 import { useDemo } from '@/context/demo-context';
@@ -35,7 +36,7 @@ function DeviceDetail({ device }: { device: Device }) {
       {!device.online && <p className="rounded-md bg-slate-50 px-2 py-1.5 text-[10px] text-slate-500">Belum ada data terkini.</p>}
     </dl>
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold">Equipment</h3>
+      <h3 className="text-sm font-semibold">Status desain · Equipment</h3>
       <div className="space-y-2">
         {unitEquipment.map(e => <div key={e.instanceId} className="space-y-1.5 rounded-xl border border-border p-3">
           <div className="flex items-center justify-between gap-2"><span className="font-medium">{e.item} · {e.name}</span><CertaintyBadge certainty={e.certainty} /></div>
@@ -46,7 +47,7 @@ function DeviceDetail({ device }: { device: Device }) {
       </div>
     </section>
     <section className="space-y-2">
-      <h3 className="text-sm font-semibold">Instrumen</h3>
+      <h3 className="text-sm font-semibold">Status desain · Instrumen</h3>
       <div className="space-y-2">
         {unitInstruments.map(i => <div key={i.instanceId} className="space-y-1.5 rounded-xl border border-border p-3">
           <div className="flex items-center justify-between gap-2"><span className="font-medium">{i.tag} · {i.name}</span><CertaintyBadge certainty={i.certainty} /></div>
@@ -60,23 +61,18 @@ function DeviceDetail({ device }: { device: Device }) {
 }
 
 export function DevicePage() {
-  const { filteredDevices } = useDemo();
+  const { siteId } = useDemo();
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState<StatusFilter>('all');
   const [layout, setLayout] = useState<'card' | 'list'>('card');
   const q = query.trim().toLowerCase();
-  const list = useMemo(() => filteredDevices.filter(d => {
-    if (status === 'offline') { if (d.online) return false; }
-    else if (status !== 'all') { if (!d.online || d.status !== status) return false; }
-    if (q && !(d.name.toLowerCase().includes(q) || d.id.toLowerCase().includes(q) || d.location.toLowerCase().includes(q))) return false;
-    return true;
-  }), [filteredDevices, status, q]);
+  const list = useMemo(() => filterDevices(siteId, q, status), [siteId, q, status]);
   return <div className="space-y-5">
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div><p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">Power monitoring workspace</p><h1 className="text-[26px] font-semibold tracking-tight sm:text-[28px]">Device</h1><p className="mt-1 text-xs leading-relaxed text-muted">Unit GEN-001 sampai GEN-004</p></div>
       <div className="flex gap-1.5" role="group" aria-label="Tampilan daftar">
-        <button type="button" onClick={() => setLayout('card')} aria-pressed={layout === 'card'} className={cn('rounded-lg border p-2', layout === 'card' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border text-muted hover:bg-slate-50')}><LayoutGrid size={16} /></button>
-        <button type="button" onClick={() => setLayout('list')} aria-pressed={layout === 'list'} className={cn('rounded-lg border p-2', layout === 'list' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border text-muted hover:bg-slate-50')}><List size={16} /></button>
+        <button type="button" aria-label="Tampilan kartu" onClick={() => setLayout('card')} aria-pressed={layout === 'card'} className={cn('rounded-lg border p-2', layout === 'card' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border text-muted hover:bg-slate-50')}><LayoutGrid size={16} /></button>
+        <button type="button" aria-label="Tampilan daftar" onClick={() => setLayout('list')} aria-pressed={layout === 'list'} className={cn('rounded-lg border p-2', layout === 'list' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border text-muted hover:bg-slate-50')}><List size={16} /></button>
       </div>
     </div>
     <Panel className="min-w-0"><PanelHeading title="Daftar unit" eyebrow="Device" action={<span className="rounded-md bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-700">{list.length} unit</span>} />

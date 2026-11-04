@@ -1,3 +1,4 @@
+import { isTicketArray } from '@/lib/validation';
 import { useEffect, useState } from 'react';
 import { Ticket, CircleCheck } from 'lucide-react';
 import { useDemo } from '@/context/demo-context';
@@ -8,9 +9,6 @@ import { loadJSON, saveJSON } from '@/lib/storage';
 import { Panel, PanelHeading, EmptyState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
 
-function isTicketArray(v: unknown): v is SupportTicket[] {
-  return Array.isArray(v) && v.every(t => t && typeof t.id === 'string' && typeof t.title === 'string' && typeof t.description === 'string');
-}
 
 export function SupportPage() {
   const { filteredDevices } = useDemo();
@@ -30,7 +28,7 @@ export function SupportPage() {
     if (!title.trim() || !description.trim()) { setError('Judul dan deskripsi wajib diisi.'); return; }
     if (title.trim().length > 120 || description.trim().length > 2000) { setError('Judul maksimal 120 karakter dan deskripsi maksimal 2000 karakter.'); return; }
     const next: SupportTicket[] = [{ id: `t-${Date.now()}`, title: title.trim(), unit, category, description: description.trim(), relatedAlarm: alarms.some(a => a.id === relatedAlarm && a.deviceId === unit) ? relatedAlarm : undefined, status: 'open', createdAt: new Date().toISOString() }, ...tickets];
-    setTickets(next); if (!saveJSON('tickets', next)) { setError('Penyimpanan tidak tersedia; tiket hanya tersedia selama sesi ini.'); return; } setError(''); setNotice('Tiket berhasil dibuat'); setTitle(''); setDescription(''); setRelatedAlarm('');
+    setTickets(next.slice(0, 200)); if (!saveJSON('tickets', next.slice(0, 200))) { setError('Penyimpanan tidak tersedia; tiket hanya tersedia selama sesi ini.'); return; } setError(''); setNotice('Tiket berhasil dibuat'); setTitle(''); setDescription(''); setRelatedAlarm('');
   };
 
   return <div className="space-y-5">

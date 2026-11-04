@@ -160,3 +160,53 @@ assert.equal(ventilationFanStatusLabels.running, 'Berjalan (running)');
 console.log('PASS: copy labels use neutral wording and keep design-status certainty labels unchanged.');
 console.log('PASS: independent per-device M-301 mock, offline/unknown/stopped guards, visual pause/resume and reduced-motion source checks.');
 console.log('PASS: fleet/filter invariants, deterministic trends, device-scoped instruments, tag mapping, null/quality semantics, digital levels, unresolved units, independent RPM/Hz, and conceptual flow certainty.');
+
+// Execute pure view selectors and schema validators against the same data module.
+async function moduleFrom(path, replacements = {}) {
+  let text = await readFile(new URL(path, import.meta.url), 'utf8');
+  let js = ts.transpileModule(text, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+  for (const [from, to] of Object.entries(replacements)) js = js.replaceAll(from, to);
+  return import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`);
+}
+const dataUrl = `data:text/javascript;base64,${Buffer.from(js).toString('base64')}`;
+const q = await moduleFrom('../src/data/queries.ts', { "'./demo'": JSON.stringify(dataUrl) });
+assert.deepEqual(q.filterDevices('site-a', '', 'running').map(d => d.id), ['GEN-001']);
+assert.deepEqual(q.filterDevices('all', 'gen-004', 'offline').map(d => d.id), ['GEN-004']);
+assert.equal(q.filterDevices('site-a', '', 'offline').length, 0);
+assert.equal(q.filterDevices('all', 'missing').length, 0);
+for (const hours of [1, 6, 24, 168]) {
+  const rows = q.telemetryRows(devices, hours);
+  assert.equal(rows.length, 4 * 4 * (hours * 12 + 1));
+  assert.ok(rows.filter(r => r.unit === 'GEN-004').every(r => r.value === null && r.quality === 'offline'));
+  for (const d of devices) for (const p of q.trendParameters) {
+    const latest = rows.filter(r => r.unit === d.id && r.parameter === p).at(-1);
+    assert.equal(latest.value, d.telemetry[p]);
+    assert.equal(latest.tag, parameters[p].tag);
+    const series = q.chartSeries(d, p, hours);
+    assert.equal(series.at(-1).time, DEMO_NOW);
+    assert.equal(series.length, hours < 24 ? hours * 12 + 1 : hours === 24 ? 24 : 7);
+    if (!d.online) assert.ok(series.every(r => r.value === null));
+  }
+}
+const hourly = q.chartSeries(devices[0], 'voltage', 24);
+const firstGroup = trends['GEN-001'].slice(-288).slice(0, 12);
+assert.equal(hourly[0].value, Number((firstGroup.reduce((sum, r) => sum + r.voltage, 0) / 12).toFixed(2)));
+const validators = await moduleFrom('../src/lib/validation.ts', { "'@/data/demo'": JSON.stringify(dataUrl) });
+assert.ok(validators.isWidgetArray([{ id: 'w1', deviceId: 'GEN-001', parameter: 'voltage', title: 'Output' }]));
+for (const parameter of ['LSL-19', 'garbage', '__proto__']) assert.equal(validators.isWidgetArray([{ id: 'w1', deviceId: 'GEN-001', parameter, title: 'x' }]), false);
+assert.equal(validators.isWidgetArray([{ id: 'w', deviceId: 'GEN-999', parameter: 'rpm', title: 'x' }]), false);
+assert.ok(validators.isTicketArray(data.seedTickets));
+assert.equal(validators.isTicketArray([{ id: 'broken', title: 'x', description: 'y' }]), false);
+const memory = new Map();
+globalThis.localStorage = { getItem: k => memory.get(k) ?? null, setItem: (k, v) => memory.set(k, v), removeItem: k => memory.delete(k), key: i => [...memory.keys()][i] ?? null, get length() { return memory.size; } };
+const storage = await moduleFrom('../src/lib/storage.ts');
+assert.equal(storage.loadJSON('bad', 'default', v => typeof v === 'string'), 'default');
+memory.set('genset-demo:v1:bad', '{malformed');
+assert.equal(storage.loadJSON('bad', 'default'), 'default');
+assert.equal(storage.saveJSON('test', 42), true);
+assert.equal(storage.loadJSON('test', 0, v => typeof v === 'number'), 42);
+assert.equal(storage.loadJSON('test', 'default', v => typeof v === 'string'), 'default');
+memory.set('unrelated', 'keep'); storage.removeAllDemoKeys();
+assert.equal(memory.size, 1); assert.equal(memory.get('unrelated'), 'keep');
+assert.equal(csv.csvCell('a\rb'), '"a\rb"');
+console.log('PASS: Device filters, telemetry/chart/gauge consistency, 7-day aggregation, nulls, storage fallback/reset and widget/ticket schemas.');

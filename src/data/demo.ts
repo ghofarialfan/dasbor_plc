@@ -102,7 +102,7 @@ export const newsItems: NewsItem[] = [
   { id: 'n2', category: 'pemeliharaan', title: 'Pengecekan filter udara', body: 'Filter udara pada sistem ventilasi direkomendasikan untuk dicek pada siklus berikutnya.', timestamp: ago(60 * 26) },
   { id: 'n3', category: 'keselamatan', title: 'Prosedur emergency stop', body: 'ES-01 berfungsi sebagai penghentian darurat hardwired, di luar logika PLC.', timestamp: ago(60 * 50) },
   { id: 'n4', category: 'umum', title: 'Pembaruan antarmuka', body: 'Tampilan subsistem dan tabel data tersedia pada ruang kerja.', timestamp: ago(60 * 74) },
-  { id: 'n5', category: 'operasional', title: 'Catatan ambang peringatan', body: 'Ambang peringatan suhu motor ditampilkan sebagai nilai rujukan, bukan batas proteksi PLC.', timestamp: ago(60 * 100) },
+  { id: 'n5', category: 'operasional', title: 'Catatan ambang peringatan', body: 'Ambang peringatan suhu motor tersedia pada detail instrumen TT-02.', timestamp: ago(60 * 100) },
 ];
 export const seedTickets: SupportTicket[] = [
   { id: 't1', title: 'Periksa suhu motor GEN-002', unit: 'GEN-002', category: 'Pemeliharaan', description: 'Suhu motor melewati ambang peringatan pada tabel parameter.', status: 'open', createdAt: ago(60 * 5) },

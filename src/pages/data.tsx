@@ -1,18 +1,16 @@
+import { telemetryRows } from '@/data/queries';
 import { useMemo, useState } from 'react';
 import { Download } from 'lucide-react';
 import { useDemo } from '@/context/demo-context';
-import { trends, parameters, parameterQuality, qualityLabels } from '@/data/demo';
+import { parameters, qualityLabels } from '@/data/demo';
 import { dateTime } from '@/lib/utils';
 import { Panel, PanelHeading, EmptyState } from '@/components/shared';
 import { toCsv, downloadCsv, isoWithZone } from '@/lib/csv';
 
 type TrendParam = 'rpm' | 'voltage' | 'frequency' | 'motorTemperature';
 const TREND_PARAMS: TrendParam[] = ['rpm', 'voltage', 'frequency', 'motorTemperature'];
-const RANGE_SAMPLES: Record<string, number> = { '1': 13, '3': 37, '6': 73, '24': 289, '168': 2017 };
 const RANGE_LABELS: Record<string, string> = { '1': '1 jam', '3': '3 jam', '6': '6 jam', '24': '24 jam', '168': '7 hari' };
 const PAGE_SIZE = 50;
-
-type Row = { time: string; unit: string; tag: string; parameter: TrendParam; value: number | null; unitLabel: string; quality: string };
 
 export function DataPage() {
   const { filteredDevices } = useDemo();
@@ -21,17 +19,7 @@ export function DataPage() {
   const [range, setRange] = useState('6');
   const [page, setPage] = useState(1);
 
-  const rows = useMemo(() => {
-    const out: Row[] = [];
-    for (const d of filteredDevices) {
-      for (const s of trends[d.id].slice(-RANGE_SAMPLES[range])) {
-        for (const p of TREND_PARAMS) {
-          out.push({ time: s.timestamp, unit: d.id, tag: parameters[p].tag, parameter: p, value: s[p], unitLabel: parameters[p].unit, quality: qualityLabels[parameterQuality(d, p)] });
-        }
-      }
-    }
-    return out;
-  }, [filteredDevices, range]);
+  const rows = useMemo(() => telemetryRows(filteredDevices, Number(range)).map(r => ({ ...r, quality: qualityLabels[r.quality] })), [filteredDevices, range]);
 
   const filtered = useMemo(() => rows.filter(r => (unit === 'all' || r.unit === unit) && (param === 'all' || r.parameter === param)), [rows, unit, param]);
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
@@ -41,7 +29,7 @@ export function DataPage() {
   const exportCsv = () => {
     const header = ['waktu', 'unit', 'tag', 'parameter', 'nilai', 'satuan', 'kualitas'];
     const body = filtered.map(r => [isoWithZone(r.time), r.unit, r.tag, r.parameter, r.value, r.unitLabel, r.quality]);
-    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '');
+    const stamp = isoWithZone(new Date().toISOString()).slice(0, 16).replace(/[-:T]/g, '');
     downloadCsv(`genset-telemetry-prototype-${stamp}.csv`, toCsv([header, ...body]));
   };
 

@@ -25,7 +25,7 @@ export function EquipmentDetails({ selectedId, restoreFocus }: { selectedId: str
       {!associated.length && <p>Instrumen belum dipetakan · Nilai: —</p>}
       {associated.map(i => <section key={i.instanceId} className="space-y-2 rounded-xl border border-border p-3">
         <h4 className="font-semibold">{i.tag} · {i.name}</h4><p>{i.function}</p>
-        <p className="text-muted">Sumber instrumen: PDF draf · {i.signal} · {certaintyLabels[i.certainty]}</p>
+        <section className="rounded-lg bg-slate-50 p-2"><h5 className="font-semibold">Status desain</h5><p className="text-muted">Sumber instrumen: PDF draf · {i.signal} · {certaintyLabels[i.certainty]}</p></section>
         {readingsForInstrument(device, i.tag).map((r, index) => <p key={index}>{r.parameter ? parameters[r.parameter].label : 'Status / nilai'}: <strong>{r.value === null ? '—' : typeof r.value === 'boolean' ? (r.value ? 'Aktif' : 'Tidak aktif') : number(r.value)}{r.value !== null && r.unit ? ` ${r.unit}` : ''}</strong> · {qualityLabels[r.quality]}</p>)}
         <p className="text-muted">{i.notes}</p>
       </section>)}

@@ -1,59 +1,35 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import assert from 'node:assert/strict';
 import ts from 'typescript';
-
-// Copy guard: user-visible text must not contain words that expose the
-// prototype as fake/demo/mock. We use the TypeScript AST so that only real
-// string literals and JSX text are checked — never variable/function names.
-const ROOT = fileURLToPath(new URL('../src', import.meta.url));
-const BANNED = ['dummy', 'mock', 'simulasi', 'simulated', 'contoh', 'fake', 'demo', 'live stream', 'preview only'];
-
-// Code-only string literals that legitimately contain a banned token but are
-// never shown to users (enum/status values, storage keys).
-const ALLOWED_LITERALS = new Set(['simulated', 'not-simulated', 'no-current-data', 'genset-demo-site']);
-const ALLOWED_PREFIXES = [/^@\//, /^genset-demo/];
-
-function collectFiles(dir) {
-  const out = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const p = join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...collectFiles(p));
-    else if (/\.(ts|tsx)$/.test(entry.name)) out.push(p);
+const root = fileURLToPath(new URL('../src', import.meta.url));
+const forbidden = /dummy|mock|simula(?:si|ted)|contoh|fake|demo|bukan\s+live\s+stream|preview\s+only/i;
+function files(dir) { return readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? files(join(dir, e.name)) : /\.(ts|tsx)$/.test(e.name) ? [join(dir, e.name)] : []); }
+function check(text, filename) {
+ const source = ts.createSourceFile(filename, text, ts.ScriptTarget.Latest, true, filename.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+ const findings = [];
+ function walk(n) {
+  const p = n.parent;
+  const literal = ts.isStringLiteral(n) || ts.isNoSubstitutionTemplateLiteral(n) || ts.isTemplateHead(n) || ts.isTemplateMiddle(n) || ts.isTemplateTail(n);
+  if (ts.isJsxText(n) || literal) {
+   const value = n.text;
+   // Exceptions apply only to code locations, never JSX labels.
+   const codeOnly = literal && ((['simulated', 'not-simulated', 'no-current-data'].includes(value) && filename.endsWith('/data/demo.ts') && !ts.isJsxAttribute(p)) || ts.isImportDeclaration(p) || ts.isExportDeclaration(p) || ts.isLiteralTypeNode(p) ||
+    (ts.isPropertyAssignment(p) && p.name === n) || ts.isElementAccessExpression(p) ||
+    (ts.isBinaryExpression(p) && [ts.SyntaxKind.EqualsEqualsEqualsToken, ts.SyntaxKind.ExclamationEqualsEqualsToken].includes(p.operatorToken.kind)) ||
+    (ts.isCallExpression(p) && ts.isPropertyAccessExpression(p.expression) && ['getItem','setItem','removeItem','startsWith'].includes(p.expression.name.text) && /^genset-demo(?::v1:.*|-site)?$/.test(value)) ||
+    (ts.isVariableDeclaration(p) && p.name.getText(source) === 'PREFIX' && value === 'genset-demo:v1:'));
+   if (!codeOnly && forbidden.test(value)) findings.push(`${filename}:${source.getLineAndCharacterOfPosition(n.pos).line + 1}: ${JSON.stringify(value.trim())}`);
   }
-  return out;
+  ts.forEachChild(n, walk);
+ }
+ walk(source); return findings;
 }
-
-function scan(text, file, findings) {
-  const lower = text.toLowerCase();
-  for (const word of BANNED) {
-    if (lower.includes(word)) findings.push(`${file} → ${JSON.stringify(text.trim())}`);
-  }
-}
-
-function checkFile(file, findings) {
-  const text = readFileSync(file, 'utf8');
-  const scriptKind = file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
-  const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, scriptKind);
-  function walk(node) {
-    if (ts.isJsxText(node)) {
-      scan(node.text, file, findings);
-    } else if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node) || ts.isTemplateHead(node) || ts.isTemplateMiddle(node) || ts.isTemplateTail(node)) {
-      const lit = node.text;
-      if (ALLOWED_LITERALS.has(lit)) return;
-      if (ALLOWED_PREFIXES.some(re => re.test(lit))) return;
-      scan(lit, file, findings);
-    }
-    ts.forEachChild(node, walk);
-  }
-  walk(source);
-}
-
-const findings = [];
-for (const file of collectFiles(ROOT)) checkFile(file, findings);
-if (findings.length) {
-  console.error('COPY GUARD FAILED');
-  for (const f of findings) console.error('  ' + f);
-  process.exit(1);
-}
-console.log('PASS: copy guard — no banned words in user-visible text.');
+for (const text of ['<button>Reset data demo</button>', '<button aria-label="simulated" />', '<Hint label="mock" />', '<DialogTitle>contoh</DialogTitle>', 'const toast = `Tiket simulasi ${id}`;', '<button>genset-demo-site</button>']) assert.ok(check(text, 'fixture.tsx').length, text);
+assert.equal(check('import { useDemo } from "@/context/demo-context"; const x = <span>Prototype</span>;', 'fixture.tsx').length, 0);
+const findings = files(root).flatMap(f => check(readFileSync(f, 'utf8'), f));
+const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+for (const v of html.matchAll(/<title>(.*?)<\/title>|content="([^"]*)"/g)) if (forbidden.test(v[1] ?? v[2] ?? '')) findings.push(`index.html: ${v[0]}`);
+if (findings.length) { console.error(findings.join('\n')); process.exit(1); }
+console.log('PASS: UI copy guard and negative fixtures for button, tooltip, aria-label, dialog, toast.');

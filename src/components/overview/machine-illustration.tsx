@@ -15,7 +15,7 @@ export function MachineIllustration({ selectedId, onSelect }: EquipmentViewProps
   const warning = filteredAlarms.some(a => a.deviceId === device.id && a.parameter === 'motorTemperature');
   return <div className="space-y-3 pb-4">
     <p className="text-xs font-semibold text-muted">Ilustrasi skematik</p>
-    <p className="text-xs leading-relaxed text-muted">Identitas item 3–9: Keterangan rekan proyek. Deret 2 → 3 → 4/5 → 6 → 7 konseptual, bukan detail kopling. Geser dan pilih komponen untuk detail.</p>
+    <p className="text-xs leading-relaxed text-muted">Deret 2 → 3 → 4/5 → 6 → 7. Geser dan pilih komponen untuk detail.</p>
     <div className="flex flex-wrap items-center gap-2 text-xs">
       <span className="text-muted">M-301: {ventilationFanStatusLabels[fanStatus]}</span>
       <button type="button" aria-pressed={fanPaused} onClick={() => setFanPaused(value => !value)} className="rounded-lg border border-border px-3 py-2 hover:bg-blue-50">{fanPaused ? 'Lanjutkan animasi' : 'Jeda animasi'}</button>
@@ -28,7 +28,7 @@ export function MachineIllustration({ selectedId, onSelect }: EquipmentViewProps
         <text x="40" y="310" fontSize="14" fill="#64748b">SKID KONSEPTUAL · ukuran dan posisi tidak berskala</text>
         {[170, 320, 470, 620, 770].map(x => <path key={x} d={`M${x} 182 h20`} stroke="#64748b" strokeWidth="7" strokeDasharray="5 4" />)}
         <text x="970" y="65" fontSize="14" fill="#64748b">8/9: posisi konseptual saja</text>
-        <text x="970" y="87" fontSize="13" fill="#64748b">Sambungan & arah daya TBD</text>
+        <text x="970" y="87" fontSize="13" fill="#64748b">Gearbox 8 dan 9</text>
         {ids.map((id, index) => {
           const e = available.find(entry => entry.id === id)!;
           const active = hovered === id || selectedId === id;
@@ -71,6 +71,6 @@ export function MachineIllustration({ selectedId, onSelect }: EquipmentViewProps
     </div>
     <div className="rounded-xl border border-blue-100 bg-blue-50/30 p-3"><p className="mb-2 text-xs font-semibold">Cabang listrik: Alternator 7 → CB-01 → output 17 · PM-01 pengukuran, bukan konversi</p><div className="flex flex-wrap gap-2">{['alternator', 'breaker', 'output'].map(id => { const e = available.find(entry => entry.id === id)!; return <DialogTrigger asChild key={id}><button onClick={() => onSelect(id)} className={`rounded-lg border bg-white px-3 py-2 text-xs hover:bg-blue-50 ${selectedId === id ? 'border-blue-500' : 'border-border'}`}>{e.name} · {e.item}</button></DialogTrigger>; })}</div></div>
     <div className="flex flex-wrap gap-2">{['pv', 'cabinet', 'bldc', 'shaft-train', 'oil19', 'oil20', 'pump', 'ventilation', 'pmg', 'avr'].map(id => { const e = available.find(entry => entry.id === id)!; return <DialogTrigger asChild key={id}><button onClick={() => onSelect(id)} className={`rounded-lg border px-3 py-2 text-xs hover:bg-blue-50 ${selectedId === id ? 'border-blue-500 bg-blue-50' : 'border-border'}`}>{e.name} · {e.item}</button></DialogTrigger>; })}</div>
-    <p className="text-[11px] leading-relaxed text-muted">Garis poros putus-putus menunjukkan deret, bukan kopling terverifikasi. Gearbox 8/9 tanpa sambungan atau arah daya. PMG/AVR tetap asumsi. Motor 6: Instrumen belum dipetakan. Hanya bilah kipas M-301 yang dianimasikan; motor, gearbox dan alternator tetap diam. Status kipas tidak diturunkan dari status genset: berhenti tidak disimpulkan dari standby.</p>
+    <p className="text-[11px] leading-relaxed text-muted">Garis poros putus-putus menunjukkan deret, bukan kopling terverifikasi. Gearbox 8/9 tanpa sambungan atau arah daya. Motor 6: Instrumen belum dipetakan. Hanya bilah kipas M-301 yang dianimasikan; motor, gearbox dan alternator tetap diam. Status kipas tidak diturunkan dari status genset: berhenti tidak disimpulkan dari standby.</p>
   </div>;
 }

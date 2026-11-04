@@ -9,7 +9,8 @@ import { preferences, notifyPreferences, type Preferences } from '@/lib/preferen
 export function ProfilePage() {
   const [profile, setProfile] = useState<Preferences>(preferences);
   const [saved, setSaved] = useState(false);
-  const commit = (next: Preferences) => { setProfile(next); if (saveJSON('profile', next)) { notifyPreferences(); setSaved(true); } setTimeout(() => setSaved(false), 2500); };
+  const [storageError, setStorageError] = useState(false);
+  const commit = (next: Preferences) => { setProfile(next); setStorageError(false); if (saveJSON('profile', next)) { notifyPreferences(); setSaved(true); } else { setStorageError(true); } setTimeout(() => setSaved(false), 2500); };
   return <div className="space-y-5">
     <div><p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">Power monitoring workspace</p><h1 className="text-[26px] font-semibold tracking-tight sm:text-[28px]">Profile</h1><p className="mt-1 text-xs leading-relaxed text-muted">Preferensi pengguna</p></div>
     <div className="grid gap-5 xl:grid-cols-2">
@@ -20,6 +21,7 @@ export function ProfilePage() {
         <div className="space-y-3 px-5 pb-5 text-xs">
           <label className="block"><span className="mb-1 block text-muted">Zona waktu</span><select value={profile.timezone} onChange={e => commit({ ...profile, timezone: e.target.value })} className="w-full rounded-lg border border-border bg-white px-2 py-2"><option value="Asia/Jakarta">Asia/Jakarta (WIB)</option><option value="Asia/Makassar">Asia/Makassar (WITA)</option><option value="Asia/Jayapura">Asia/Jayapura (WIT)</option></select></label>
           <label className="flex items-center gap-2"><input type="checkbox" checked={profile.notifications} onChange={e => commit({ ...profile, notifications: e.target.checked })} />Notifikasi aktif</label>
+          {storageError && <p role="alert" className="text-amber-700">Preferensi tidak dapat disimpan.</p>}
           {saved && <p className="text-emerald-700">Preferensi tersimpan.</p>}
         </div>
       </Panel>

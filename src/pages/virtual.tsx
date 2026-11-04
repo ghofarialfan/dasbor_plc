@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import { useDemo } from '@/context/demo-context';
 import { Panel, PanelHeading } from '@/components/shared';
+import { Hint } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { EquipmentDetails } from '@/components/overview/equipment-details';
 import { DriverOutput, OilLube, Ventilation, Security } from '@/components/virtual/subsystems';
@@ -26,8 +28,9 @@ export function VirtualPage() {
         <div><p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">Power monitoring workspace</p><h1 className="text-[26px] font-semibold tracking-tight sm:text-[28px]">Virtual</h1><p className="mt-1 text-xs leading-relaxed text-muted">Subsistem per unit · ilustrasi skematik</p></div>
         <label className="text-xs text-muted"><span className="sr-only">Pilih device</span><select aria-label="Pilih device" value={device.id} onChange={e => selectDevice(e.target.value)} className="max-w-[150px] rounded-lg border border-border bg-white px-2 py-2 text-xs font-medium text-foreground">{filteredDevices.map(d => <option key={d.id} value={d.id}>{d.id}</option>)}</select></label>
       </div>
-      <div role="tablist" aria-label="Subsistem" className="flex flex-wrap gap-2 border-b border-border pb-3">{subsystems.map((s, i) => <button key={s.id} id={`virtual-tab-${i}`} role="tab" aria-selected={tab === i} aria-controls="virtual-panel" tabIndex={tab === i ? 0 : -1} onClick={() => setTab(i)} className={`rounded-lg px-3 py-2 text-xs font-semibold ${tab === i ? 'bg-blue-50 text-blue-700' : 'text-muted hover:bg-slate-50'}`}>{s.label}</button>)}</div>
-      <Panel className="min-w-0"><PanelHeading title={subsystems[tab].label} eyebrow={`${device.id} · ilustrasi skematik`} /><div id="virtual-panel" role="tabpanel" aria-labelledby={`virtual-tab-${tab}`} className="max-w-full overflow-x-auto px-5 pb-5"><Active selectedId={selectedId} onSelect={onSelect} /></div><p className="border-t border-slate-100 px-5 py-3 text-[10px] text-muted">Klik komponen untuk membuka detail. Parameter tanpa nilai menampilkan "Belum ada data".</p></Panel>
+      <div role="tablist" aria-label="Subsistem" className="flex flex-wrap gap-2 border-b border-border pb-3">{subsystems.map((s, i) => <button key={s.id} id={`virtual-tab-${i}`} role="tab" aria-selected={tab === i} aria-controls="virtual-panel" tabIndex={tab === i ? 0 : -1} onKeyDown={e => { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) { e.preventDefault(); const next = e.key === 'Home' ? 0 : e.key === 'End' ? 3 : (tab + (e.key === 'ArrowLeft' ? 3 : 1)) % 4; setTab(next); document.getElementById(`virtual-tab-${next}`)?.focus(); } }} onClick={() => setTab(i)} className={`rounded-lg px-3 py-2 text-xs font-semibold ${tab === i ? 'bg-blue-50 text-blue-700' : 'text-muted hover:bg-slate-50'}`}>{s.label}</button>)}</div>
+      <Panel className="min-w-0"><PanelHeading title={subsystems[tab].label} eyebrow={`${device.id} · ilustrasi skematik`} /><div id="virtual-panel" role="tabpanel" aria-labelledby={`virtual-tab-${tab}`} className="max-w-full overflow-x-auto px-5 pb-5"><Active key={device.id} selectedId={selectedId} onSelect={onSelect} /></div><p className="border-t border-slate-100 px-5 py-3 text-[10px] text-muted">Klik komponen untuk membuka detail. Parameter tanpa nilai menampilkan "Belum ada data".</p></Panel>
+      <div className="flex flex-wrap gap-2">{['VFD-12', 'M-301', 'DMP-301', 'CB-01'].map(tag => <Hint key={tag} label="Kontrol jarak jauh belum diaktifkan"><span tabIndex={0} aria-label={`${tag}: Kontrol jarak jauh belum diaktifkan`}><Button disabled variant="outline">{tag}</Button></span></Hint>)}</div>
     </div>
     {selectedId && <EquipmentDetails selectedId={selectedId} restoreFocus={() => trigger.current?.focus()} />}
   </Dialog>;

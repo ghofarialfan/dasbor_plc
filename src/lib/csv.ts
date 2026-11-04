@@ -1,7 +1,7 @@
 export function csvCell(value: string | number | null): string {
   if (value === null) return '';
   const s = String(value);
-  if (/[",\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  if (/[",\r\n]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
 
@@ -18,7 +18,7 @@ export function downloadCsv(filename: string, csv: string) {
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export function isoWithZone(value: string): string {

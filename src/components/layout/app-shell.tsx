@@ -40,7 +40,7 @@ export function AppShell() {
             <ProfileMenu />
           </div>
         </div>
-        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-2 sm:px-6 lg:hidden"><DemoBadge /><span className="hidden text-[10px] text-muted sm:block">Frontend prototype</span></div>
+        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-4 py-2 sm:px-6 lg:hidden"><DemoBadge /><span className="hidden text-[10px] text-muted sm:block">Workspace</span></div>
       </header>
       <main id="main-content" className="mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-5 flex items-center gap-2 text-[11px] text-muted"><span>Workspace</span><span className="text-slate-300">/</span><span className="font-medium text-foreground">{page}</span></div>
