@@ -120,6 +120,18 @@ for (const tag of ['PV-01', 'PRT-01', 'TT-10', 'ST-10', 'PDT-201', 'TT-201', 'TT
 const es01 = instrumentDefinitions.find(i => i.tag === 'ES-01');
 assert.equal(es01.valueType, 'digital');
 assert.ok(es01.notes.includes('Hardwired, di luar logika PLC'));
+// M2 Data: CSV escaping, ISO 8601 with zone, and null-as-empty-cell behavior.
+const csvSource = await readFile(new URL('../src/lib/csv.ts', import.meta.url), 'utf8');
+const csvJs = ts.transpileModule(csvSource, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText;
+const csv = await import(`data:text/javascript;base64,${Buffer.from(csvJs).toString('base64')}`);
+assert.equal(csv.csvCell(null), '');
+assert.equal(csv.csvCell('a,b'), '"a,b"');
+assert.equal(csv.csvCell('a"b'), '"a""b"');
+assert.equal(csv.csvCell('a\nb'), '"a\nb"');
+assert.equal(csv.toCsv([[null, 'x'], ['a,b', 'c']]), ',x\n"a,b",c');
+assert.equal(csv.isoWithZone(DEMO_NOW), '2026-11-04T14:00:00+07:00');
+// Data page uses the same trends/parameters as gauge and chart (ST-401, PM-01, TT-02).
+for (const p of ['rpm', 'voltage', 'frequency', 'motorTemperature']) assert.ok(['ST-401', 'PM-01', 'PM-01', 'TT-02'].includes(parameters[p].tag));
 const { ventilationFanMocks, ventilationFanStatus, ventilationFanRotates } = data;
 assert.deepEqual(devices.map(d => ventilationFanStatus(d)), ['running', 'running', 'stopped', 'offline']);
 assert.deepEqual(devices.map(d => ventilationFanRotates(ventilationFanStatus(d))), [true, true, false, false]);
