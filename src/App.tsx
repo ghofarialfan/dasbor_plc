@@ -5,12 +5,18 @@ import { Overview } from '@/pages/overview';
 import { DevicePage } from '@/pages/device';
 import { VirtualPage } from '@/pages/virtual';
 import { DataPage } from '@/pages/data';
+import { GaugeWidgetPage } from '@/pages/gauge-widget';
+import { ChartWidgetPage } from '@/pages/chart-widget';
+import { CameraViewPage } from '@/pages/camera-view';
 import { Placeholder } from '@/pages/placeholder';
 
 const pages: Record<string, ReactNode> = {
   '/device': <DevicePage />,
   '/virtual': <VirtualPage />,
   '/data': <DataPage />,
+  '/gauge-widget': <GaugeWidgetPage />,
+  '/chart-widget': <ChartWidgetPage />,
+  '/camera-view': <CameraViewPage />,
 };
 
 export default function App() {
