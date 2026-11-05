@@ -1,6 +1,6 @@
 # Checklist review manual M1.5–M5
 
-Status: **belum diuji visual di browser oleh agent**. Checklist ini bukan hasil PASS visual.
+Checklist M1.5–M5 berikut belum divalidasi ulang menyeluruh di browser. Hasil khusus Galeri Mesin dicatat terpisah di bawah; bukan PASS seluruh halaman lama atau persetujuan visual pengguna.
 
 - [ ] Desktop 1440px, tablet 768px, mobile 390px: shell/card/typography konsisten; hanya tabel/diagram yang boleh scroll horizontal di dalam card.
 - [ ] Chip Prototype di header; card Frontend prototype di sidebar/drawer; ikon + tooltip pada sidebar collapsed. Tidak ada kata terlarang di teks, toast, aria-label atau tooltip.
@@ -22,3 +22,18 @@ Status: **belum diuji visual di browser oleh agent**. Checklist ini bukan hasil 
 - [ ] Build preview: semua direct route refresh dengan SPA fallback; tidak mengklaim deployment selesai.
 
 Backlog Overview dan keterbacaan ilustrasi 1550px tetap menunggu review terpisah, bukan revisi layout dalam milestone ini.
+
+## Galeri Mesin — hasil CHECKPOINT 3B
+
+- [x] Desktop 1440×1000 dan mobile 390×844: kartu/ilustrasi terlihat, lebar dokumen tidak melampaui viewport; panel mobile tepat 390 px tanpa overflow horizontal.
+- [x] 20 kartu, 19 ilustrasi item teridentifikasi; semua lazy images termuat setelah scroll. Item 18 dan detailnya tidak memiliki aset rekaan.
+- [x] Sidebar desktop dan drawer mobile memuat Galeri Mesin; Device → Galeri, Back dan Forward bekerja. Pergantian site tidak menyaring inventaris.
+- [x] Refresh langsung `/machines` di Vite dev port 5179 dan preview port 5180 merender halaman; preview memakai respons cache 304 pada reload yang diperiksa.
+- [x] Enter dan Space membuka detail; Tab berpindah antarkartu. Delapan siklus Tab dan Shift+Tab tetap di Dialog; Escape menutup dan mengembalikan fokus ke kartu pemicu.
+- [x] PMG 10/11 memakai tag bersama TT-10/ST-10 dengan pemetaan belum ditentukan. P-201 tetap terlihat pada registry tanpa relasi mesin. LSL-19 tampil Digital tanpa gauge persen.
+- [x] Console/error browser: tidak ada warning/error aplikasi pada sesi yang diperiksa. Preview tidak memuat resource eksternal atau fetch/XHR. Tidak ada koneksi telemetri nyata.
+- [x] `test:copy`, `test:data`, `typecheck`, build outDir `/tmp` lulus. Warning CSS baseline `-: T;` dipertahankan.
+- [x] Screenshot viewport galeri/detail desktop dan mobile diambil. Analisis model vision atas screenshot menunjukkan kartu terbaca tanpa overlap yang tampak; bukan persetujuan visual pengguna.
+- [ ] Persetujuan visual pengguna atas Galeri Mesin.
+- [ ] Konfigurasi dan uji fallback SPA pada hosting produksi; belum ada deployment.
+

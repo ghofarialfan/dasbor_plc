@@ -27,6 +27,7 @@ Preview default http://127.0.0.1:4173. Output statis berada di `dist/`; tidak di
 
 - **Overview:** layout dan ilustrasi mesin lama dipertahankan; copy netral, animasi M-301 tetap independen. Revisi visual Overview ada di backlog.
 - **Device:** empat unit GEN-001–004; search nama/ID/lokasi, status, card/list, drawer identitas/equipment/instrumen. Site memakai filter global shell. Offline menampilkan nilai kosong dan last seen.
+- **Galeri Mesin (`/machines`):** 20 item inventaris konseptual, 12 template SVG eksternal, detail sumber/kepastian dan relasi tag. Independen dari filter site/device dan tidak memakai pembacaan telemetri.
 - **Virtual:** empat SVG subsistem (penggerak/output, oli, ventilasi, keamanan), node keyboard/click membuka dialog detail bersama. P-201 tidak dipasangkan ke gearbox; ES-01 hardwired di luar logika PLC. Tombol kontrol disabled; jeda animasi hanya preferensi tampilan.
 - **Data:** telemetry dari sumber deterministik yang sama dengan chart/gauge, filter unit/parameter (tag tercantum dalam opsi), rentang 1/3/6/24 jam dan 7 hari; pagination 50 baris. CSV mengekspor seluruh hasil filter, bukan hanya halaman aktif. Null menjadi sel kosong; koma/kutip/CR/LF di-escape, timestamp ISO `+07:00`, nama berisi `prototype`.
 - **Gauge Widget:** tambah/hapus widget, unit/tag/judul; enam channel numerik yang dipetakan (PM-01 V dan Hz terpisah). TT-12 tetap null; LSL bukan gauge. Konfigurasi disimpan lokal. Widget mengikuti cakupan site.
@@ -39,7 +40,7 @@ Preview default http://127.0.0.1:4173. Output statis berada di `dist/`; tidak di
 
 ## Data, sumber, dan batasan engineering
 
-`src/data/demo.ts` adalah sumber data tunggal; `src/data/queries.ts` hanya selector/agregasi, bukan salinan telemetry. Snapshot akhir **4 November 2026 07:00 UTC / 14:00 WIB**, bukan waktu live. Tiap unit memiliki 2017 sampel 5 menit (7 hari). RPM/Hz independen, nilai terbaru identik dengan gauge. GEN-004 offline: null di semua channel; nol standby GEN-003 disengaja, bukan substitusi null. TT-303 mempertahankan mock suhu ruang; TT-12 tidak menyalin TT-02. Angka 4 MW di draf bukan daya aktual yang ditampilkan.
+`src/data/demo.ts` adalah sumber data telemetri tunggal; `src/data/queries.ts` hanya selector/agregasi, bukan salinan telemetry. Snapshot akhir **4 November 2026 07:00 UTC / 14:00 WIB**, bukan waktu live. Tiap unit memiliki 2017 sampel 5 menit (7 hari). RPM/Hz independen, nilai terbaru identik dengan gauge. GEN-004 offline: null di semua channel; nol standby GEN-003 disengaja, bukan substitusi null. TT-303 mempertahankan mock suhu ruang; TT-12 tidak menyalin TT-02. Angka 4 MW di draf bukan daya aktual yang ditampilkan.
 
 Identitas 3/6 motor, 4/5/8/9 gearbox, 7 alternator berasal dari rekan proyek; metadata sumber/draf tidak dihapus. PMG/AVR tetap asumsi. P-201 lokasi fisik belum dikonfirmasi. LSL-19/20 boolean/null, bukan persen; AT-301 belum memiliki satuan final. Ambang 35 °C adalah **ambang peringatan ilustrasi, bukan batas proteksi PLC**. Range gauge adalah rentang display, bukan rating mesin. Detail ada di `docs/PID-MAPPING.md`.
 
@@ -51,14 +52,37 @@ Key prefix `genset-demo:v1:`: site, gauge-widgets, tickets, profile, camera-layo
 
 ## Routing dan build statis
 
-React Router memakai BrowserRouter. Untuk hosting statis kelak, konfigurasi server agar semua route non-aset fallback ke `index.html`. Refresh `/device`, `/virtual`, `/data`, `/gauge-widget`, `/chart-widget`, `/camera-view`, `/news`, `/support`, `/profile`, `/logout` harus mendapat HTML aplikasi. Vite dev/preview mendukung fallback; server file biasa tanpa fallback tidak cukup. Membuka `dist/index.html` via `file://` bukan cara menjalankan. Tidak ada konfigurasi atau deployment remote dibuat.
+React Router memakai BrowserRouter. Untuk hosting statis kelak, konfigurasi server agar semua route non-aset fallback ke `index.html`. Refresh `/machines`, `/device`, `/virtual`, `/data`, `/gauge-widget`, `/chart-widget`, `/camera-view`, `/news`, `/support`, `/profile`, `/logout` harus mendapat HTML aplikasi. Vite dev/preview mendukung fallback; server file biasa tanpa fallback tidak cukup. Membuka `dist/index.html` via `file://` bukan cara menjalankan. Tidak ada konfigurasi atau deployment remote dibuat.
 
 ## Validasi
 
 `test:data`: filter site/status/search, identitas dan tag per device, LSL boolean/null, P-201 tidak ke item angka, CSV escaping dan zona waktu, konsistensi tabel/gauge/chart, agregasi 7 hari, offline/null, skema widget/tiket, storage invalid/reset. `test:copy`: AST TypeScript/JSX dan metadata HTML; negative fixtures untuk tombol/aria-label/tooltip/dialog/toast. Nama internal enum/file tidak dianggap copy UI. Typecheck dan Vite build juga wajib.
 
-Tidak ada browser fungsional yang digunakan untuk validasi visual. Hasil build/test otomatis bukan bukti lolos screenshot, responsivitas, fokus aktual, atau tooltip di browser. Review manual di `docs/REVIEW-CHECKLIST.md`.
+Validasi awal M1.5–M5 tidak memakai browser fungsional. Galeri Mesin sudah diuji di browser pada desktop 1440×1000 dan mobile 390×844; ini bukan validasi ulang seluruh halaman lama. Hasil otomatis bukan pengganti persetujuan visual pengguna. Cakupan pemeriksaan ada di `docs/REVIEW-CHECKLIST.md`.
 
 ## Backlog
 
 `docs/BACKLOG.md`: revisi Overview dari partner dan audit keterbacaan ilustrasi 1550px. Belum dikerjakan. Tidak ada dependency baru untuk M1.5–M5.
+
+## Galeri Mesin — CHECKPOINT 3B
+
+- Metadata: `src/data/machines.json` (20 item), `src/data/instruments.json` (33 tag unik), tipe `src/types/machine-assets.ts`, dan ekspor/selector statis `src/data/machine-catalog.ts`. Ini definisi konseptual, bukan instance GEN atau sumber readings baru.
+- Runtime: `public/assets/machines/*.svg`, ditampilkan melalui `<img>`; master tetap di bengkel `genset-interaktif/assets-source/machines/`. Ekspor membuang metadata editor tanpa perubahan geometri: 24 perbandingan RGBA pada 512/64 px identik. Total runtime 37.478 byte dibanding master 63.860 byte.
+- Banner satu kali: **Inventaris konseptual — Belum ada data**, mengikuti `docs/hapid.md` bagian 6.1, terutama baris 210, 214 dan 226 pada dokumen sebelum penambahan bagian Galeri. Status tetap **Unknown**, pembacaan **—**; tidak mengklaim Offline/koneksi yang tidak diketahui.
+- Item 18 tanpa aset/posisi. Item 14/16 tetap Fungsi belum ditentukan. Geometri generik, fungsi, identitas dan pemetaan dibedakan; klaim 380 V pada item 17 bukan spesifikasi terverifikasi.
+- Satu entri per tag tidak menyatakan satu sensor fisik. Registry juga mempertahankan tag peralatan/aktuator. ST-401 berlingkup sistem poros; VT-401 area 4–5; TT-10/ST-10 kelompok 10/11 tetap unresolved. P-201 tanpa item numerik, konflik lama tetap terbuka. Binding runtime kosong; sinyal draf seperti Modbus bukan koneksi.
+- Detail memakai Dialog existing dengan panel kanan, tombol kartu, Tab/Shift+Tab terkurung, Escape dan pemulihan fokus. Provider, kontrak/data telemetri dan ilustrasi Overview tidak diubah. Tidak ada dependency baru; `package.json` dan pemeriksaan copy tetap.
+
+Build/preview terisolasi dari root dashboard:
+
+```sh
+BUILD_DIR="$(mktemp -d /tmp/genset-machines.XXXXXX)"
+npm run test:copy
+npm run test:data
+npm run typecheck
+npm run build -- --outDir "$BUILD_DIR/dist" --configLoader runner
+npm run preview -- --outDir "$BUILD_DIR/dist" --configLoader runner
+```
+
+Keempat pemeriksaan lulus pada CHECKPOINT 3B. Warning CSS baseline `Expected identifier but found "-"` pada deklarasi `-: T;` tetap ada dan tidak diperbaiki. Refresh langsung `/machines` terbukti merender di dev dan preview; preview dapat mengembalikan 304 saat cache dipakai. Hosting produksi tetap membutuhkan fallback SPA dan belum diuji/deploy.
+

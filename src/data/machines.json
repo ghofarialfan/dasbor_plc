@@ -1,0 +1,401 @@
+[
+  {
+    "id": "machine-01",
+    "item": 1,
+    "name": "Panel surya / PLTS",
+    "template": "solar-panel",
+    "asset": "assets/machines/solar-panel.svg",
+    "function": "Sumber PV konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Kisi sel dan mounting ilustratif; kapasitas, wiring dan sambungan PLN tidak diasumsikan."
+    ]
+  },
+  {
+    "id": "machine-02",
+    "item": 2,
+    "name": "Motor awal deret poros",
+    "template": "motor",
+    "asset": "assets/machines/motor.svg",
+    "function": "Motor pada deret poros konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Jenis dan rating belum dikonfirmasi. ST-401 terkait deret poros, bukan sensor khusus motor ini."
+    ]
+  },
+  {
+    "id": "machine-03",
+    "item": 3,
+    "name": "Motor",
+    "template": "motor",
+    "asset": "assets/machines/motor.svg",
+    "function": "Motor sesuai daftar identitas terbaru.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Jenis, rating dan kopling belum dikonfirmasi."
+    ]
+  },
+  {
+    "id": "machine-04",
+    "item": 4,
+    "name": "Gearbox",
+    "template": "gearbox",
+    "asset": "assets/machines/gearbox.svg",
+    "function": "Transmisi mekanis konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Rasio belum diketahui. Identitas terbaru gearbox, bukan pompa; konflik P-201 belum terselesaikan."
+    ]
+  },
+  {
+    "id": "machine-05",
+    "item": 5,
+    "name": "Gearbox",
+    "template": "gearbox",
+    "asset": "assets/machines/gearbox.svg",
+    "function": "Transmisi mekanis konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Rasio belum diketahui. VT-401 mencakup area 4–5, bukan dua tag atau bukti dua sensor."
+    ]
+  },
+  {
+    "id": "machine-06",
+    "item": 6,
+    "name": "Motor",
+    "template": "motor",
+    "asset": "assets/machines/motor.svg",
+    "function": "Motor sesuai daftar identitas terbaru.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Jenis dan rating belum ditentukan; tidak ada tag khusus TT-06."
+    ]
+  },
+  {
+    "id": "machine-07",
+    "item": 7,
+    "name": "Alternator utama",
+    "template": "alternator",
+    "asset": "assets/machines/alternator.svg",
+    "function": "Pembangkitan listrik konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Rating dan jumlah kutub belum dikonfirmasi; relasi instrumen sistem bukan lokasi fisik."
+    ]
+  },
+  {
+    "id": "machine-08",
+    "item": 8,
+    "name": "Gearbox",
+    "template": "gearbox",
+    "asset": "assets/machines/gearbox.svg",
+    "function": "Transmisi mekanis konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Rasio, sambungan dan arah transfer daya belum diketahui; konflik P-201 tetap terbuka."
+    ]
+  },
+  {
+    "id": "machine-09",
+    "item": 9,
+    "name": "Gearbox",
+    "template": "gearbox",
+    "asset": "assets/machines/gearbox.svg",
+    "function": "Transmisi mekanis konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Rasio dan fungsi transmisi rinci belum diketahui; konflik P-201 tetap terbuka."
+    ]
+  },
+  {
+    "id": "machine-10",
+    "item": 10,
+    "name": "PMG 10",
+    "template": "pmg",
+    "asset": "assets/machines/pmg.svg",
+    "function": "Peran PMG pada sistem eksitasi masih asumsi.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belt konseptual. Pembagian sensor/channel TT-10 dan ST-10 pada kelompok 10/11 belum jelas."
+    ]
+  },
+  {
+    "id": "machine-11",
+    "item": 11,
+    "name": "PMG 11",
+    "template": "pmg",
+    "asset": "assets/machines/pmg.svg",
+    "function": "Peran PMG pada sistem eksitasi masih asumsi.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Tidak membuat TT-11/ST-11 atau mengasumsikan jumlah sensor fisik; mapping kelompok belum jelas."
+    ]
+  },
+  {
+    "id": "machine-12",
+    "item": 12,
+    "name": "Motor BLDC",
+    "template": "bldc-motor",
+    "asset": "assets/machines/bldc-motor.svg",
+    "function": "Motor BLDC konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "VFD-12 adalah tag draf; tipe driver belum dikonfirmasi."
+    ]
+  },
+  {
+    "id": "machine-13",
+    "item": 13,
+    "name": "Kabinet kontrol/driver",
+    "template": "cabinet-control",
+    "asset": "assets/machines/cabinet-control.svg",
+    "function": "Kabinet kontrol/driver konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Isi driver/PLC belum dikonfirmasi; tidak ada kontrol perangkat aktif."
+    ]
+  },
+  {
+    "id": "machine-14",
+    "item": 14,
+    "name": "Rak modul bertingkat",
+    "template": "cabinet-rack",
+    "asset": "assets/machines/cabinet-rack.svg",
+    "function": "Fungsi belum ditentukan",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "tbd",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Empat modul merupakan ilustrasi; tidak menyatakan baterai atau inverter."
+    ]
+  },
+  {
+    "id": "machine-15",
+    "item": 15,
+    "name": "Manifold",
+    "template": "manifold",
+    "asset": "assets/machines/manifold.svg",
+    "function": "Manifold pelumasan konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Fungsi fisik dan jumlah cabang perlu konfirmasi; tiga cabang hanya ilustratif."
+    ]
+  },
+  {
+    "id": "machine-16",
+    "item": 16,
+    "name": "Kabinet",
+    "template": "cabinet-generic",
+    "asset": "assets/machines/cabinet-generic.svg",
+    "function": "Fungsi belum ditentukan",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "tbd",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Kabinet netral; tidak menyatakan baterai atau inverter."
+    ]
+  },
+  {
+    "id": "machine-17",
+    "item": 17,
+    "name": "Titik output listrik",
+    "template": "output-point",
+    "asset": "assets/machines/output-point.svg",
+    "function": "Titik koneksi output konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "380 V merupakan klaim draf, bukan spesifikasi terverifikasi. Enclosure terminal, bukan mesin pembangkit; jumlah terminal ilustratif."
+    ]
+  },
+  {
+    "id": "machine-18",
+    "item": 18,
+    "name": "Belum teridentifikasi",
+    "template": null,
+    "asset": null,
+    "function": "Fungsi belum ditentukan",
+    "status": "unknown",
+    "identityCertainty": "tbd",
+    "geometryCertainty": "unresolved",
+    "functionCertainty": "tbd",
+    "mappingCertainty": "tbd",
+    "sources": [
+      "Daftar identitas pengguna"
+    ],
+    "notes": [
+      "Tidak ada aset, posisi, atau relasi instrumen rekaan."
+    ]
+  },
+  {
+    "id": "machine-19",
+    "item": 19,
+    "name": "Tangki oli TK-19",
+    "template": "oil-tank",
+    "asset": "assets/machines/oil-tank.svg",
+    "function": "Tangki oli konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "LSL-19 adalah sakelar level rendah digital, bukan persen isi; peran tangki belum dikonfirmasi."
+    ]
+  },
+  {
+    "id": "machine-20",
+    "item": 20,
+    "name": "Tangki oli TK-20",
+    "template": "oil-tank",
+    "asset": "assets/machines/oil-tank.svg",
+    "function": "Tangki oli konseptual.",
+    "status": "unknown",
+    "identityCertainty": "clarified",
+    "geometryCertainty": "generic-reference",
+    "functionCertainty": "assumed",
+    "mappingCertainty": "documented",
+    "sources": [
+      "Daftar identitas pengguna",
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "LSL-20 adalah sakelar level rendah digital, bukan persen isi; tidak diasumsikan tangki cadangan/balik."
+    ]
+  }
+]

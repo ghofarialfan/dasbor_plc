@@ -13,9 +13,11 @@ import { SupportPage } from '@/pages/support';
 import { ProfilePage } from '@/pages/profile';
 import { LogoutPage } from '@/pages/logout';
 import { Placeholder } from '@/pages/placeholder';
+import { MachinesPage } from '@/pages/machines';
 
 const pages: Record<string, ReactNode> = {
   '/device': <DevicePage />,
+  '/machines': <MachinesPage />,
   '/virtual': <VirtualPage />,
   '/data': <DataPage />,
   '/gauge-widget': <GaugeWidgetPage />,

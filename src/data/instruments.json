@@ -1,0 +1,745 @@
+[
+  {
+    "tag": "ST-401",
+    "name": "RPM poros",
+    "function": "Pengukuran kecepatan deret poros (proximity).",
+    "valueType": "analog",
+    "signal": "DI / counter cepat",
+    "unit": "rpm",
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-02",
+      "machine-03",
+      "machine-04",
+      "machine-05",
+      "machine-06",
+      "machine-07"
+    ],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Tidak dipakai menghitung frekuensi; jumlah kutub belum dikonfirmasi.",
+      "Cakupan deret poros konseptual, bukan sensor khusus motor 2. Posisi, cakupan fisik dan jumlah channel belum dikonfirmasi."
+    ]
+  },
+  {
+    "tag": "PM-01",
+    "name": "Power meter output",
+    "function": "Mengukur V, I, daya dan frekuensi output 17.",
+    "valueType": "analog",
+    "signal": "Modbus",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-07",
+      "machine-17"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Hanya V dan Hz yang ditampilkan. Bukan konverter daya; tidak ada klaim daya aktual.",
+      "Satu tag untuk sistem alternator/output; bukan konverter daya atau bukti lokasi sensor."
+    ]
+  },
+  {
+    "tag": "TT-02",
+    "name": "Suhu motor 2",
+    "function": "Pengukuran suhu motor item 2.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-02"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Ambang peringatan 35 °C.",
+      "Relasi item berdasarkan draf; tidak mengikat pembacaan perangkat."
+    ]
+  },
+  {
+    "tag": "TT-03",
+    "name": "Suhu motor 3",
+    "function": "Pengukuran suhu item 3 sesuai draf; identitas motor dari rekan proyek.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-03"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data; tidak menyalin TT-02. Draf belum memastikan fungsi item.",
+      "Identitas item 3 mengikuti daftar terbaru."
+    ]
+  },
+  {
+    "tag": "VT-401",
+    "name": "Getaran deret poros 4/5",
+    "function": "Getaran deret poros 4 dan 5 sesuai draf.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": null,
+    "relationScope": "area",
+    "relatedMachineIds": [
+      "machine-04",
+      "machine-05"
+    ],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Titik pemasangan dan satuan belum dipetakan; tidak membuat channel terpisah.",
+      "Cakupan area 4–5, bukan dua sensor. Titik pemasangan dan satuan belum dipetakan."
+    ]
+  },
+  {
+    "tag": "VT-07",
+    "name": "Getaran alternator",
+    "function": "Getaran alternator sesuai draf.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": null,
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-07"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Titik pemasangan, channel dan satuan belum dikonfirmasi; belum ada data.",
+      "Pemetaan channel dan titik pemasangan belum dikonfirmasi."
+    ]
+  },
+  {
+    "tag": "TT-12",
+    "name": "Suhu BLDC",
+    "function": "Pengukuran suhu BLDC item 12.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-12"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data; tidak disalin dari TT-02.",
+      "Tanpa data; tidak menyalin TT-02."
+    ]
+  },
+  {
+    "tag": "TT-303",
+    "name": "Suhu ruang",
+    "function": "Pengukuran suhu ruang unit.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Suhu ruang unit; bukan suhu BLDC.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "TT-07",
+    "name": "Suhu belitan dan bearing alternator",
+    "function": "Suhu belitan dan bearing alternator sesuai draf.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-07"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Pemetaan channel belum jelas; tidak dibuat channel belitan/bearing terpisah.",
+      "Tidak membuat channel belitan/bearing terpisah."
+    ]
+  },
+  {
+    "tag": "LSL-19",
+    "name": "Low-level TK-19",
+    "function": "Status digital level oli rendah.",
+    "valueType": "digital",
+    "signal": "DI",
+    "unit": null,
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-19"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "boolean/null; true = low-level aktif. Bukan persen isi tangki.",
+      "Sakelar digital low-level: boolean/null, bukan persen isi tangki."
+    ]
+  },
+  {
+    "tag": "LSL-20",
+    "name": "Low-level TK-20",
+    "function": "Status digital level oli rendah.",
+    "valueType": "digital",
+    "signal": "DI",
+    "unit": null,
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-20"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "boolean/null; true = low-level aktif. Bukan persen isi tangki.",
+      "Sakelar digital low-level: boolean/null, bukan persen isi tangki."
+    ]
+  },
+  {
+    "tag": "PT-201",
+    "name": "Tekanan oli",
+    "function": "Pengukuran tekanan oli.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Satuan dan rentang belum ditetapkan.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "AT-301",
+    "name": "RH / titik embun (TBD)",
+    "function": "Pemantauan kondensasi; RH atau titik embun belum dipilih.",
+    "valueType": "unresolved",
+    "signal": "AI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "tbd",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Satuan belum final; tidak ditampilkan sebagai %RH atau °C.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "VFD-12",
+    "name": "Driver BLDC",
+    "function": "Driver BLDC item 12 di kabinet 13.",
+    "valueType": "unresolved",
+    "signal": "AO, DO, DI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-12",
+      "machine-13"
+    ],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Tidak ada command perangkat.",
+      "Tag driver pada draf, bukan bukti driver AC biasa atau lokasi PLC."
+    ]
+  },
+  {
+    "tag": "CB-01",
+    "name": "Breaker output",
+    "function": "Status dan trip breaker output.",
+    "valueType": "digital",
+    "signal": "DO, DI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-07",
+      "machine-17"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Tidak ada command open/close.",
+      "Satu tag sistem output/alternator; tidak ada perintah open/close aktif."
+    ]
+  },
+  {
+    "tag": "AVR-01",
+    "name": "Pengatur eksitasi",
+    "function": "Pengaturan tegangan dan eksitasi.",
+    "valueType": "unresolved",
+    "signal": "AO, Modbus, DI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-07",
+      "machine-10",
+      "machine-11"
+    ],
+    "mappingStatus": "unresolved",
+    "certainty": "assumed",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Fungsi terkait PMG masih asumsi.",
+      "Peran PMG/AVR masih asumsi, bukan koneksi fisik terverifikasi."
+    ]
+  },
+  {
+    "tag": "M-301",
+    "name": "Kipas ventilasi",
+    "function": "Ventilasi paksa ruang unit.",
+    "valueType": "unresolved",
+    "signal": "AO, DI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Status M-301 terpisah untuk tampilan; bukan pembacaan instrumen atau RPM terukur. Kontrol jarak jauh belum diaktifkan.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "DMP-301",
+    "name": "Damper ventilasi",
+    "function": "Pengaturan damper ventilasi.",
+    "valueType": "analog",
+    "signal": "AO",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Posisi damper belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "PV-01",
+    "name": "Tegangan, arus dan daya PV",
+    "function": "Daya masuk PV; alarm gangguan string.",
+    "valueType": "unresolved",
+    "signal": "Modbus",
+    "unit": null,
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-01"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data.",
+      "Tidak ada asumsi sambungan PLN atau data aktual."
+    ]
+  },
+  {
+    "tag": "PRT-01",
+    "name": "Relay proteksi",
+    "function": "Relay proteksi: 27, 59, 81, 50, 51.",
+    "valueType": "unresolved",
+    "signal": "DI, Modbus",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-07",
+      "machine-17"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Trip ke CB-01; belum ada data.",
+      "Relasi proteksi pada draf, bukan kontrol aktif."
+    ]
+  },
+  {
+    "tag": "TT-10",
+    "name": "Suhu belitan PMG",
+    "function": "Suhu belitan PMG 10 dan 11.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-10",
+      "machine-11"
+    ],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data.",
+      "Kelompok PMG 10/11; jumlah sensor/channel dan pembagiannya belum jelas. Tidak membuat TT-11."
+    ]
+  },
+  {
+    "tag": "ST-10",
+    "name": "Kecepatan PMG",
+    "function": "Kecepatan PMG, pantau slip belt.",
+    "valueType": "unresolved",
+    "signal": "DI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [
+      "machine-10",
+      "machine-11"
+    ],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Alarm slip; belum ada data.",
+      "Kelompok PMG 10/11; jumlah sensor/channel dan pembagiannya belum jelas. Tidak membuat ST-11."
+    ]
+  },
+  {
+    "tag": "PDT-201",
+    "name": "Beda tekanan filter oli",
+    "function": "Beda tekanan filter oli.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Alarm filter kotor; belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "TT-201",
+    "name": "Suhu oli",
+    "function": "Suhu oli pelumas.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "TT-301",
+    "name": "Suhu udara luar",
+    "function": "Suhu udara luar; referensi derating.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "TT-304",
+    "name": "Suhu udara keluar",
+    "function": "Suhu udara keluar.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": "°C",
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "PDT-301",
+    "name": "Beda tekanan filter udara",
+    "function": "Beda tekanan filter udara.",
+    "valueType": "analog",
+    "signal": "AI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Alarm filter kotor; belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "ES-01",
+    "name": "Emergency stop",
+    "function": "Penghentian darurat.",
+    "valueType": "digital",
+    "signal": "DI",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Hardwired, di luar logika PLC.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "SIR-01",
+    "name": "Sirine dan beacon",
+    "function": "Alarm bertingkat.",
+    "valueType": "digital",
+    "signal": "DO",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Kontrol jarak jauh belum diaktifkan.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "GPS-01",
+    "name": "Modul GPS geofence",
+    "function": "Geofence unit.",
+    "valueType": "unresolved",
+    "signal": "Serial",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Shutdown bertahap; belum ada data.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "DNG-01",
+    "name": "Dongle security key",
+    "function": "Kunci keamanan unit.",
+    "valueType": "unresolved",
+    "signal": "USB/serial",
+    "unit": null,
+    "relationScope": "system",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Sertifikat unik per unit.",
+      "Relasi sistem tercantum pada draf; pemetaan ke item inventaris belum ditentukan."
+    ]
+  },
+  {
+    "tag": "SPD-01",
+    "name": "Proteksi petir DC",
+    "function": "Proteksi petir DC.",
+    "valueType": "digital",
+    "signal": "DI",
+    "unit": null,
+    "relationScope": "component",
+    "relatedMachineIds": [
+      "machine-01"
+    ],
+    "mappingStatus": "documented",
+    "certainty": "documented",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)"
+    ],
+    "notes": [
+      "Status kerusakan; belum ada data.",
+      "Relasi proteksi PV pada draf; bukan pembacaan perangkat."
+    ]
+  },
+  {
+    "tag": "P-201",
+    "name": "Pompa oli",
+    "function": "Pompa pelumasan pada draf; lokasi fisik belum dikonfirmasi.",
+    "valueType": "unresolved",
+    "signal": "Belum ditentukan",
+    "unit": null,
+    "relationScope": "unresolved",
+    "relatedMachineIds": [],
+    "mappingStatus": "unresolved",
+    "certainty": "tbd",
+    "status": "unknown",
+    "runtimeBindings": [],
+    "sources": [
+      "PDF P&ID Genset PLTS (draf)",
+      "Daftar identitas pengguna"
+    ],
+    "notes": [
+      "Draf lama mengaitkan pompa dengan salah satu item 4/5/8/9; daftar terbaru menyebut keempatnya gearbox. Konflik belum terselesaikan, tanpa penempatan rekaan."
+    ]
+  }
+]

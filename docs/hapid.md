@@ -491,3 +491,32 @@ Tambah component/E2E test bila alat disepakati; uji offline/stale/null, invalid 
 - `docs/reference/PID_Genset_PLTS.pdf`: draf sumber, bukan approval fabrikasi.
 
 **Kesimpulan serah-terima:** fondasi frontend dan seluruh halaman M1–M5 sudah tersedia untuk review. Tahap berikutnya adalah validasi visual partner, penutupan pertanyaan engineering, lalu perencanaan integrasi nyata secara terpisah. Jangan menyamakan keberhasilan build/test dengan commissioning sistem monitoring PLC.
+
+## 14. Galeri Mesin — CHECKPOINT 3B
+
+Bagian ini ditambahkan setelah persetujuan CHECKPOINT 3A dengan revisi; seluruh aturan dan catatan sebelumnya tetap berlaku. `package.json` dan `scripts/check-copy.mjs` tidak diubah. Tidak ada dependency baru, commit, push, deployment atau koneksi telemetri nyata.
+
+### 14.1 Halaman, copy dan interaksi
+
+Route `/machines` dan menu **Galeri Mesin** menampilkan inventaris konseptual independen dari site/device terpilih. Provider, sumber data telemetri, kontrak readings dan ilustrasi Overview tetap. Komponen baru memakai Panel/Button dan Dialog existing dengan panel kanan; ilustrasi berupa `<img>`, bukan SVG inline baru.
+
+Banner hanya sekali pada halaman: **Inventaris konseptual — Belum ada data**. Acuan bagian 6.1: baris 208 melarang kata tertentu; baris 210 melarang tambahan label prototype/disclaimer pada tiap kartu; baris 214 menetapkan copy data belum tersedia; baris 226 melarang alasan gangguan rekaan. Status default memakai **Unknown** existing, pembacaan **—** dengan **Belum ada data terkini.**; tidak mengklaim Offline atau koneksi tanpa bukti. Label kepastian definisi tidak disamakan dengan status pemetaan/operasi.
+
+Tombol kartu membuka detail melalui Enter/Space atau klik. Dialog menampilkan sumber, catatan, kepastian identitas/geometri/fungsi/pemetaan dan registry tag terkait. Tab/Shift+Tab terkurung; Escape dan tombol tutup mengembalikan fokus ke kartu pemicu. Tag tanpa relasi mesin tetap terlihat pada bagian registry, bukan disembunyikan.
+
+### 14.2 Metadata dan aset
+
+`src/data/machines.json` memuat 20 item, `src/data/instruments.json` memuat 33 tag unik; tipe berada di `src/types/machine-assets.ts`, konsumsi dan relasi statis di `src/data/machine-catalog.ts`. Ini bukan instance per GEN atau duplikasi readings. Satu entri tag tidak menetapkan satu sensor fisik; registry mencakup tag instrumen/peralatan/aktuator dari draf dan konflik P-201. Sinyal draf tidak berarti transport berjalan; semua binding runtime kosong dan status unknown.
+
+Item 18 tetap tanpa template/aset/posisi. Fungsi 14/16 belum ditentukan. ST-401 berlingkup deret poros, VT-401 area 4–5, TT-10/ST-10 kelompok 10/11 tetap unresolved, VFD-12 terkait 12/13 dengan tipe driver belum pasti. PM-01/CB-01 tidak digandakan per item. LSL-19/20 digital, bukan persen. Tidak dibuat TT-06/TT-11/ST-11. P-201 tidak dipetakan ke 4/5/8/9; konflik identitas pompa/gearbox tidak ditutup. Klaim 380 V dan geometri referensi bukan validasi engineering.
+
+Dua belas SVG runtime berada di `public/assets/machines/`. Master tetap tidak berubah di bengkel `genset-interaktif`; metadata editor dibuang tanpa perubahan geometri, viewBox, aksesibilitas, ID non-editor atau body/status. Total 63.860 → 37.478 byte; XML/resource/ID lulus dan 24 perbandingan render master/runtime 512/64 px menghasilkan nol perbedaan piksel RGBA.
+
+### 14.3 Verifikasi dan batas hasil
+
+`npm run test:copy`, `npm run test:data`, `npm run typecheck`, dan `npm run build -- --outDir "/tmp/genset-machine-integration-i5qvappu/dist" --configLoader runner` lulus. Pemeriksaan registry tambahan membuktikan identitas unik, referensi aset, cakupan bersama, null item 18, level digital, status unknown dan binding kosong. Warning CSS baseline `-: T;` tetap ada; tidak diperbaiki. Tidak ada script lint.
+
+Browser aktual diuji pada desktop 1440×1000 dan mobile 390×844: refresh langsung `/machines` di dev/preview, navigasi/back/forward, drawer mobile, independensi site, pemuatan 19 ilustrasi, detail PMG/TK-19/item 18, keyboard/fokus dan overflow horizontal. Tidak ada warning/error aplikasi pada console yang diperiksa; preview tanpa fetch/XHR atau resource eksternal. Screenshot galeri/detail kedua viewport diambil. Analisis model vision atas screenshot bukan persetujuan visual pengguna dan bukan validasi ulang seluruh halaman lama.
+
+Dev dan preview menyediakan fallback BrowserRouter; reload preview yang diperiksa mengembalikan 304 dengan halaman tetap merender. Hosting produksi tetap harus mengembalikan `index.html` untuk route non-aset seperti `/machines`. Hosting produksi belum dikonfigurasi, diuji atau di-deploy. CHECKPOINT 3B menunggu review pengguna, bukan commissioning PLC.
+
