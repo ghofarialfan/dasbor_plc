@@ -2,6 +2,7 @@ import { LayoutDashboard, Cpu, Boxes, Table2, Gauge, ChartNoAxesCombined, Camera
 export const navigation = [
   { path: '/', label: 'Overview', icon: LayoutDashboard, milestone: 1 },
   { path: '/device', label: 'Device', icon: Cpu, milestone: 2 },
+  { path: '/machines', label: 'Galeri Mesin', icon: Boxes, milestone: 2 },
   { path: '/virtual', label: 'Virtual', icon: Boxes, milestone: 2 },
   { path: '/data', label: 'Data', icon: Table2, milestone: 2 },
   { path: '/gauge-widget', label: 'Gauge Widget', icon: Gauge, milestone: 3 },
