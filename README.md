@@ -1,6 +1,6 @@
 # GensetMonitor — Frontend Prototype
 
-M1.5–M5: Overview, Device, Virtual, Data, Gauge Widget, Chart Widget, Camera View, News, Support, Profile, Logout, dan finalisasi frontend. Tidak ada backend, MQTT, PLC, autentikasi nyata, kontrol mesin, push, atau deployment.
+M1.5–M5: Overview, Device, Virtual, Data, Gauge Widget, Chart Widget, Camera View, News, Support, Profile, Logout, dan finalisasi frontend. Tidak ada backend, MQTT, PLC, autentikasi nyata, kontrol mesin, atau push notification. Konfigurasi deployment frontend statis ke GitHub Pages tersedia.
 
 ## Menjalankan
 
@@ -21,7 +21,7 @@ npm run build
 npm run preview
 ```
 
-Preview default http://127.0.0.1:4173. Output statis berada di `dist/`; tidak di-commit atau di-deploy. Tidak memerlukan secret atau `.env`.
+Preview default http://127.0.0.1:4173. Output statis berada di `dist/`; tidak di-commit. GitHub Actions membangun dan memublikasikannya sebagai artifact Pages. Tidak memerlukan secret aplikasi atau `.env`.
 
 ## Halaman dan perilaku
 
@@ -52,7 +52,27 @@ Key prefix `genset-demo:v1:`: site, gauge-widgets, tickets, profile, camera-layo
 
 ## Routing dan build statis
 
-React Router memakai BrowserRouter. Untuk hosting statis kelak, konfigurasi server agar semua route non-aset fallback ke `index.html`. Refresh `/machines`, `/device`, `/virtual`, `/data`, `/gauge-widget`, `/chart-widget`, `/camera-view`, `/news`, `/support`, `/profile`, `/logout` harus mendapat HTML aplikasi. Vite dev/preview mendukung fallback; server file biasa tanpa fallback tidak cukup. Membuka `dist/index.html` via `file://` bukan cara menjalankan. Tidak ada konfigurasi atau deployment remote dibuat.
+React Router memakai HashRouter agar navigasi dan refresh bekerja di GitHub Pages tanpa fallback server. Contoh URL halaman: `/dasbor_plc/#/machines` dan `/dasbor_plc/#/device`. Gunakan format hash ini untuk bookmark; URL lama tanpa hash seperti `/dasbor_plc/device` tidak didukung di Pages. Membuka `dist/index.html` via `file://` bukan cara menjalankan.
+
+### Deployment GitHub Pages
+
+Repositori tujuan: https://github.com/ghofarialfan/dasbor_plc.
+
+1. Commit perubahan konfigurasi dan gabungkan branch pengembangan ke `main`. Workflow `.github/workflows/deploy-pages.yml` berjalan otomatis pada push ke `main` atau manual melalui **Actions → Deploy GitHub Pages → Run workflow** setelah workflow tersedia di default branch.
+2. Buka **Settings → Pages → Build and deployment → Source → GitHub Actions**. Pastikan paket/visibilitas repositori mendukung Pages; situs yang dipublikasikan bisa diakses publik sesuai pengaturan Pages. Jangan unggah data operasional rahasia.
+3. Periksa tab **Actions** sampai job `build` dan `deploy` berhasil.
+4. Buka https://ghofarialfan.github.io/dasbor_plc/ dan uji navigasi serta refresh https://ghofarialfan.github.io/dasbor_plc/#/machines.
+
+Workflow menggunakan Node 22, `npm ci`, pemeriksaan data/copy, typecheck melalui build, dan `npm run build -- --base=/dasbor_plc/`. Token `GITHUB_TOKEN` disediakan GitHub secara otomatis; tidak perlu menyimpan personal access token. Nama repositori yang berubah memerlukan penyesuaian argumen `--base` dan URL di atas. Jika branch produksi bukan `main`, sesuaikan filter `branches` workflow.
+
+Untuk menguji build subpath secara lokal:
+
+```sh
+npm run build -- --base=/dasbor_plc/
+npm run preview -- --base=/dasbor_plc/
+```
+
+Buka http://127.0.0.1:4173/dasbor_plc/#/machines. Konfigurasi ini hanya menghosting frontend prototype, bukan koneksi PLC/MQTT, backend, atau autentikasi. Status deployment remote belum diverifikasi dari lingkungan lokal.
 
 ## Validasi
 
