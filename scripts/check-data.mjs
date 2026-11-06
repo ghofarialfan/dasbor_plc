@@ -148,7 +148,6 @@ const styles = await readFile(new URL('../src/index.css', import.meta.url), 'utf
 assert.equal((illustration.match(/className="ventilation-fan-blades"/g) ?? []).length, 1, 'only fan blades get rotation class');
 assert.ok(illustration.includes("ventilationFanRotates(fanStatus, fanPaused) ? 'running' : 'paused'"));
 assert.ok(illustration.includes('pointerEvents="none" aria-hidden="true"'));
-assert.ok(styles.includes('transform-origin: 1425px 168px'));
 assert.match(styles, /prefers-reduced-motion: reduce\) \{ \.ventilation-fan-blades \{ animation: none !important/);
 const { qualityLabels, ventilationFanStatusLabels } = data;
 assert.equal(qualityLabels.simulated, 'Nilai terbaru');

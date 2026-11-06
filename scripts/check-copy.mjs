@@ -15,7 +15,8 @@ function check(text, filename) {
   if (ts.isJsxText(n) || literal) {
    const value = n.text;
    // Exceptions apply only to code locations, never JSX labels.
-   const codeOnly = literal && ((['simulated', 'not-simulated', 'no-current-data'].includes(value) && filename.endsWith('/data/demo.ts') && !ts.isJsxAttribute(p)) || ts.isImportDeclaration(p) || ts.isExportDeclaration(p) || ts.isLiteralTypeNode(p) ||
+   const normalizedFilename = filename.replaceAll('\\', '/');
+   const codeOnly = literal && ((['simulated', 'not-simulated', 'no-current-data'].includes(value) && normalizedFilename.endsWith('/data/demo.ts') && !ts.isJsxAttribute(p)) || ts.isImportDeclaration(p) || ts.isExportDeclaration(p) || ts.isLiteralTypeNode(p) ||
     (ts.isPropertyAssignment(p) && p.name === n) || ts.isElementAccessExpression(p) ||
     (ts.isBinaryExpression(p) && [ts.SyntaxKind.EqualsEqualsEqualsToken, ts.SyntaxKind.ExclamationEqualsEqualsToken].includes(p.operatorToken.kind)) ||
     (ts.isCallExpression(p) && ts.isPropertyAccessExpression(p.expression) && ['getItem','setItem','removeItem','startsWith'].includes(p.expression.name.text) && /^genset-demo(?::v1:.*|-site)?$/.test(value)) ||
@@ -28,6 +29,8 @@ function check(text, filename) {
 }
 for (const text of ['<button>Reset data demo</button>', '<button aria-label="simulated" />', '<Hint label="mock" />', '<DialogTitle>contoh</DialogTitle>', 'const toast = `Tiket simulasi ${id}`;', '<button>genset-demo-site</button>']) assert.ok(check(text, 'fixture.tsx').length, text);
 assert.equal(check('import { useDemo } from "@/context/demo-context"; const x = <span>Prototype</span>;', 'fixture.tsx').length, 0);
+assert.equal(check("const quality = 'simulated';", 'C:\\repo\\src\\data\\demo.ts').length, 0);
+assert.ok(check("const label = <span>simulated</span>;", 'C:\\repo\\src\\data\\demo.tsx').length);
 const findings = files(root).flatMap(f => check(readFileSync(f, 'utf8'), f));
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
 for (const v of html.matchAll(/<title>(.*?)<\/title>|content="([^"]*)"/g)) if (forbidden.test(v[1] ?? v[2] ?? '')) findings.push(`index.html: ${v[0]}`);

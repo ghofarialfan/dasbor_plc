@@ -51,11 +51,12 @@ interface MachineDetailPanelProps {
   machine: MachineAsset;
   instruments: MachineInstrument[];
   onCloseAutoFocus?: ComponentPropsWithoutRef<typeof DialogContent>['onCloseAutoFocus'];
+  layout?: 'drawer' | 'dialog';
 }
 
-export function MachineDetailPanel({ machine, instruments, onCloseAutoFocus }: MachineDetailPanelProps) {
+export function MachineDetailPanel({ machine, instruments, onCloseAutoFocus, layout = 'drawer' }: MachineDetailPanelProps) {
   const assetUrl = machineAssetUrl(machine);
-  return <DialogContent side="right" onCloseAutoFocus={onCloseAutoFocus}>
+  return <DialogContent side={layout === 'drawer' ? 'right' : undefined} onCloseAutoFocus={onCloseAutoFocus}>
     <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">Item {machine.item}</p>
     <DialogTitle className="pr-7 text-xl font-semibold">{machine.name}</DialogTitle>
     <DialogDescription className="mt-2 text-xs leading-relaxed text-muted">{machine.function}</DialogDescription>
