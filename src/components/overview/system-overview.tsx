@@ -29,6 +29,6 @@ function OverviewViews() {
       }} className={`rounded-lg px-3 py-2 text-xs font-semibold ${tab === index ? 'bg-blue-50 text-blue-700' : 'text-muted hover:bg-slate-50'}`}>{label}</button>)}
     </div>
     {[0, 1].map(index => <div key={index} role="tabpanel" id={`system-panel-${index}`} aria-labelledby={`system-tab-${index}`} hidden={tab !== index}>{index === 0 ? <MachineIllustration {...views} /> : <SystemDiagram {...views} />}</div>)}
-    {selectedId && <EquipmentDetails selectedId={selectedId} restoreFocus={() => trigger.current?.focus()} />}
+    {selectedId && !selectedId.startsWith('catalog-item-') && <EquipmentDetails selectedId={selectedId} restoreFocus={() => trigger.current?.focus()} />}
   </Dialog>;
 }
