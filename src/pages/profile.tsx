@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useDemo } from '@/context/demo-context';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { RotateCcw } from 'lucide-react';
 import { saveJSON, removeAllDemoKeys } from '@/lib/storage';
 import { Panel, PanelHeading } from '@/components/shared';
@@ -7,10 +9,14 @@ import { Button } from '@/components/ui/button';
 import { preferences, notifyPreferences, type Preferences } from '@/lib/preferences';
 
 export function ProfilePage() {
+  const { preferences: sharedPreferences } = useDemo();
   const [profile, setProfile] = useState<Preferences>(preferences);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetError, setResetError] = useState(false);
+  useEffect(() => setProfile(sharedPreferences), [sharedPreferences]);
   const [saved, setSaved] = useState(false);
   const [storageError, setStorageError] = useState(false);
-  const commit = (next: Preferences) => { setProfile(next); setStorageError(false); if (saveJSON('profile', next)) { notifyPreferences(); setSaved(true); } else { setStorageError(true); } setTimeout(() => setSaved(false), 2500); };
+  const commit = (next: Preferences) => { setProfile(next); setStorageError(false); if (saveJSON('profile', next)) { notifyPreferences(); setSaved(true); } else { setProfile(sharedPreferences); setStorageError(true); } setTimeout(() => setSaved(false), 2500); };
   return <div className="space-y-5">
     <div><p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">Power monitoring workspace</p><h1 className="text-[26px] font-semibold tracking-tight sm:text-[28px]">Profile</h1><p className="mt-1 text-xs leading-relaxed text-muted">Preferensi pengguna</p></div>
     <div className="grid gap-5 xl:grid-cols-2">
@@ -27,7 +33,7 @@ export function ProfilePage() {
       </Panel>
     </div>
     <Panel className="min-w-0"><PanelHeading title="Pengaturan data" eyebrow="Reset" />
-      <div className="px-5 pb-5 text-xs"><p className="mb-3 text-muted">Kembalikan semua preferensi, widget, dan tiket ke kondisi awal.</p><Button variant="outline" onClick={() => { removeAllDemoKeys(); window.location.reload(); }}><RotateCcw size={15} />Kembalikan pengaturan awal</Button></div>
+      <div className="px-5 pb-5 text-xs"><p className="mb-3 text-muted">Kembalikan semua preferensi, widget, pengaturan perangkat lokal, riwayat perubahan, dan tiket ke kondisi awal.</p><Dialog open={resetOpen} onOpenChange={setResetOpen}><DialogTrigger asChild><Button variant="outline"><RotateCcw size={15} />Kembalikan pengaturan awal</Button></DialogTrigger><DialogContent><DialogTitle className="text-lg font-semibold">Kembalikan pengaturan awal?</DialogTitle><DialogDescription className="mt-2 text-xs text-muted">Pilihan site/unit, preferensi, tata letak kamera, widget, tiket, target, skenario, dan riwayat perubahan lokal akan dihapus dan diganti seed awal. Tindakan ini tidak dapat dibatalkan; telemetry tidak berubah.</DialogDescription>{resetError && <p role="alert" className="mt-3 text-xs text-amber-700">Reset tidak selesai. Penyimpanan browser tidak dapat dihapus; sebagian key mungkin sudah terhapus. Coba lagi.</p>}<div className="mt-4 flex justify-end gap-2"><Button variant="outline" onClick={() => setResetOpen(false)}>Batal</Button><Button onClick={() => { if (removeAllDemoKeys()) window.location.reload(); else setResetError(true); }}>Ya, kembalikan</Button></div></DialogContent></Dialog></div>
     </Panel>
   </div>;
 }

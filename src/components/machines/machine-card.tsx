@@ -29,8 +29,8 @@ export const MachineCard = forwardRef<HTMLButtonElement, MachineCardProps>(({ ma
       </span>
       <span className="line-clamp-3 text-xs font-normal leading-relaxed text-muted">{machine.function}</span>
       <span className="mt-auto flex items-center justify-between gap-2 pt-1">
-        <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-600"><CircleHelp aria-hidden="true" size={12} />Unknown</span>
-        <span className="text-xs text-muted" aria-label="Pembacaan terkini belum tersedia">—</span>
+        <span className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-semibold text-slate-600"><CircleHelp aria-hidden="true" size={12} />Katalog referensi</span>
+        <span className="text-xs text-blue-700">Lihat detail</span>
       </span>
     </span>
   </Button>;

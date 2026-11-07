@@ -25,6 +25,7 @@ export interface FlowLink {
 export interface InstrumentReading {
   deviceId: string; tag: string; parameter?: Parameter;
   value: number | boolean | null; unit?: string; quality: DataQuality;
+  channel?: string; label?: string; max?: number; timestamp?: string; assumption?: string;
 }
 
 export interface Telemetry {
@@ -43,7 +44,7 @@ export interface Alarm {
   parameter?: Parameter; threshold?: number;
 }
 export interface Activity { id: string; deviceId: string; title: string; description: string; timestamp: string; kind: 'success' | 'warning' | 'offline' }
-export interface TrendSample { timestamp: string; rpm: number | null; voltage: number | null; frequency: number | null; motorTemperature: number | null }
+export interface TrendSample extends Telemetry { timestamp: string }
 export interface GaugeWidgetConfig { id: string; deviceId: string; parameter: Parameter; title: string }
 export interface Ticket { id: string; title: string; description: string; status: 'open' | 'resolved'; createdAt: string }
 export type NewsCategory = 'operasional' | 'pemeliharaan' | 'keselamatan' | 'umum';

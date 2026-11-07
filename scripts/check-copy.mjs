@@ -21,7 +21,23 @@ function check(text, filename) {
     (ts.isBinaryExpression(p) && [ts.SyntaxKind.EqualsEqualsEqualsToken, ts.SyntaxKind.ExclamationEqualsEqualsToken].includes(p.operatorToken.kind)) ||
     (ts.isCallExpression(p) && ts.isPropertyAccessExpression(p.expression) && ['getItem','setItem','removeItem','startsWith'].includes(p.expression.name.text) && /^genset-demo(?::v1:.*|-site)?$/.test(value)) ||
     (ts.isVariableDeclaration(p) && p.name.getText(source) === 'PREFIX' && value === 'genset-demo:v1:'));
-   if (!codeOnly && forbidden.test(value)) findings.push(`${filename}:${source.getLineAndCharacterOfPosition(n.pos).line + 1}: ${JSON.stringify(value.trim())}`);
+   // Approved provenance disclosure is restricted to the shared unit-status badge.
+   const statusProvenance = normalizedFilename.endsWith('/components/shared.tsx') && ['. Data demo. ', 'Data demo · ', '· Data demo'].includes(value.trimStart());
+   const motionProvenance = normalizedFilename.endsWith('/components/conceptual-motion.tsx') && value.trim() === 'Ilustrasi gerak mengikuti status unit · Data demo, bukan feedback operasi masing-masing komponen. Arah putaran, RPM, dan aliran aktual tidak direpresentasikan. Pengaturan kurangi animasi tetap dihormati.';
+   const controlProvenance = normalizedFilename.endsWith('/lib/demo-controls.ts') && [
+    'Demo lokal · Tidak ada perintah dikirim ke site. Telemetry, alarm, dan animasi tidak berubah.',
+    'Perubahan hanya berlaku pada demo di browser ini.', 'Terapkan ke demo', 'Diterapkan pada demo lokal', 'Target manual demo',
+   ].includes(value);
+   const capabilityProvenance = (normalizedFilename.endsWith('/pages/device.tsx') && value.trim() === '· Pembacaan simulasi') || (literal && value === 'DEMO:' && ts.isCallExpression(p) && ts.isPropertyAccessExpression(p.expression) && p.expression.name.text === 'startsWith' && ['/pages/device.tsx', '/components/overview/equipment-details.tsx'].some(path => normalizedFilename.endsWith(path))) || (normalizedFilename.endsWith('/data/demo.ts') && [
+     'RH asumsi demo; jenis aktual TBD', 'DEMO:', 'Kondisi demo ',
+     'Indikator kondisi simulasi; bukan feedback perangkat aktual.', 'Simulasi lokal',
+     'Tag DEMO sintetis; bukan alamat PLC atau sensor terverifikasi.',
+     'Asumsi simulasi: satuan, rentang dan binding bukan spesifikasi atau feedback aktual.',
+   ].includes(value)) || (normalizedFilename.endsWith('/components/capability-history.tsx') && [
+     'genset-capability-demo.csv',
+     'Simulasi eksplisit, bukan feedback aktual. Rentang/satuan tambahan adalah asumsi. Digital: 1 = aktif/true, 0 = tidak aktif/false. Timestamp terakhir ',
+   ].includes(value.trimStart()));
+   if (!codeOnly && !statusProvenance && !motionProvenance && !controlProvenance && !capabilityProvenance && forbidden.test(value)) findings.push(`${filename}:${source.getLineAndCharacterOfPosition(n.pos).line + 1}: ${JSON.stringify(value.trim())}`);
   }
   ts.forEachChild(n, walk);
  }

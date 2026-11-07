@@ -1,51 +1,40 @@
-import { chartSeries } from '@/data/queries';
-import { preferences } from '@/lib/preferences';
+import { useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { CapabilityHistory } from '@/components/capability-history';
 import { useMemo, useState } from 'react';
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useDemo } from '@/context/demo-context';
 import { parameters } from '@/data/demo';
-import { number, time } from '@/lib/utils';
-import { Panel, PanelHeading, EmptyState } from '@/components/shared';
-
-type TrendParam = 'rpm' | 'voltage' | 'frequency' | 'motorTemperature';
-const PARAMS: TrendParam[] = ['rpm', 'voltage', 'frequency', 'motorTemperature'];
-const COLORS = ['#2563eb', '#d97706', '#16a34a', '#9333ea'];
-
-function shortDate(value: string) { return new Intl.DateTimeFormat('id-ID', { timeZone: preferences().timezone, day: '2-digit', month: 'short' }).format(new Date(value)); }
+import { historyParameters, historyDataset, type HistoryRange } from '@/data/history';
+import { HistoryChart } from '@/components/history-chart';
+import { Panel, EmptyState } from '@/components/shared';
+import type { Parameter } from '@/types';
 
 export function ChartWidgetPage() {
-  const { filteredDevices } = useDemo();
-  const [deviceId, setDeviceId] = useState(filteredDevices[0]?.id ?? 'GEN-001');
-  const [selected, setSelected] = useState<TrendParam[]>(['voltage']);
-  const [range, setRange] = useState('6H');
-  const device = filteredDevices.find(d => d.id === deviceId) ?? filteredDevices[0];
-
-  const toggle = (p: TrendParam) => setSelected(prev => prev.includes(p) ? prev.filter(x => x !== p) : prev.length >= 2 ? [prev[1], p] : [...prev, p]);
-
-  const data = useMemo(() => {
-    if (!device) return [];
-    const merged: Record<string, { time: string; [key: string]: string | number | null }> = {};
-    selected.forEach(p => chartSeries(device, p, range === '1H' ? 1 : range === '6H' ? 6 : range === '24H' ? 24 : 168).forEach(row => { merged[row.time] = merged[row.time] ?? { time: row.time }; merged[row.time][p] = row.value; }));
-    return Object.values(merged);
-  }, [device, selected, range]);
-
-  const label = range === '7D' ? shortDate : time;
-
+  const { filteredDevices, device, selectDevice } = useDemo();
+  const [params, setParams] = useSearchParams();
+  const requestedUnit = params.get('unit');
+  useEffect(() => { if (requestedUnit && requestedUnit !== device.id && filteredDevices.some(d => d.id === requestedUnit)) selectDevice(requestedUnit); }, [requestedUnit, device.id, filteredDevices, selectDevice]);
+  const [selected, setSelected] = useState<Parameter[]>(() => {
+    const parameter = params.get('parameter') as Parameter;
+    return historyParameters.includes(parameter) ? [parameter] : [...historyParameters];
+  });
+  const [range, setRange] = useState<HistoryRange>('6H');
+  const [compare, setCompare] = useState(false);
+  const series = useMemo(() => historyDataset(device.id, range), [device.id, range]);
+  const toggle = (p: Parameter) => setSelected(prev => prev.includes(p) ? prev.filter(x => x !== p) : compare && prev.length >= 2 ? [prev[1], p] : [...prev, p]);
   return <div className="space-y-5">
-    <div className="flex flex-wrap items-start justify-between gap-3">
-      <div><p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">Power monitoring workspace</p><h1 className="text-[26px] font-semibold tracking-tight sm:text-[28px]">Chart Widget</h1><p className="mt-1 text-xs leading-relaxed text-muted">Grafik parameter per unit · maksimal dua seri</p></div>
-    </div>
-    <Panel className="min-w-0"><PanelHeading title="Grafik parameter" eyebrow={device ? `${device.id} · ${range}` : 'Device'} />
-      <div className="flex flex-wrap gap-2 px-5 pb-3">
-        <select aria-label="Pilih device" value={deviceId} onChange={e => setDeviceId(e.target.value)} className="rounded-lg border border-border bg-white px-2 py-1.5 text-xs">{filteredDevices.map(d => <option key={d.id} value={d.id}>{d.id}</option>)}</select>
-        {PARAMS.map(p => <button key={p} type="button" onClick={() => toggle(p)} aria-pressed={selected.includes(p)} className={`rounded-lg border px-2.5 py-1.5 text-[11px] font-medium ${selected.includes(p) ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border text-muted hover:bg-slate-50'}`}>{parameters[p].label}</button>)}
-        <div role="group" aria-label="Rentang waktu" className="flex gap-1">{['1H', '6H', '24H', '7D'].map(r => <button key={r} onClick={() => setRange(r)} aria-pressed={range === r} className={`rounded-md px-2 py-1.5 text-[10px] font-medium ${range === r ? 'bg-blue-50 text-blue-700' : 'text-muted hover:bg-slate-50'}`}>{r}</button>)}</div>
+    <div><p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand">Power monitoring workspace</p><h1 className="text-[26px] font-semibold tracking-tight sm:text-[28px]">Tren &amp; Riwayat</h1><p className="mt-1 text-xs text-muted">Histori parameter per unit · grafik terpisah atau perbandingan dua seri</p></div>
+    <Panel className="space-y-3 p-5 text-xs">
+      <div className="flex flex-wrap items-center gap-3">
+        <label>Unit<select value={device.id} onChange={e => { selectDevice(e.target.value); setParams(previous => { const next = new URLSearchParams(previous); next.delete('unit'); return next; }); }} className="ml-2 rounded-lg border border-border p-2">{filteredDevices.map(d => <option key={d.id} value={d.id}>{d.id} · {d.name}</option>)}</select></label>
+        <label>Tampilan<select value={compare ? 'compare' : 'grid'} onChange={e => { const next = e.target.value === 'compare'; setCompare(next); if (next) setSelected(prev => prev.slice(0, 2)); }} className="ml-2 rounded-lg border border-border p-2"><option value="grid">Grafik per parameter</option><option value="compare">Bandingkan dua parameter</option></select></label>
       </div>
-      <div className="px-5 pb-3 text-[10px] text-muted">{range === '24H' ? 'Agregasi per jam.' : range === '7D' ? 'Agregasi per hari.' : 'Interval 5 menit.'}</div>
-      <div className="h-[300px] min-w-0 px-2 pb-4">
-        {!device || !device.online ? <EmptyState title="Belum ada data terkini" description="Unit offline tidak menampilkan riwayat." /> : selected.length === 0 ? <EmptyState title="Pilih parameter" description="Pilih minimal satu tag untuk menggambar grafik." /> : <ResponsiveContainer width="100%" height="100%"><LineChart data={data} margin={{ top: 10, left: 4, right: 6, bottom: 8 }}><CartesianGrid strokeDasharray="3 4" vertical={false} stroke="#e9edf3" /><XAxis dataKey="time" tickFormatter={label} minTickGap={32} tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} /><YAxis label={{ value: selected[0] ? parameters[selected[0]].unit : '', angle: -90, position: 'insideLeft' }} yAxisId="left" width={52} tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => number(Number(v))} />{selected.length > 1 && <YAxis label={{ value: selected[1] ? parameters[selected[1]].unit : '', angle: 90, position: 'insideRight' }} yAxisId="right" orientation="right" width={52} tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={v => number(Number(v))} />}<Tooltip formatter={(v, name) => [typeof v === 'number' ? `${number(v)} ${parameters[name as TrendParam].unit}` : '—', parameters[name as TrendParam].label]} contentStyle={{ borderRadius: 12, borderColor: '#e5eaf1', fontSize: 11 }} /><Legend formatter={(name) => parameters[name as TrendParam].label} />{selected.map((p, i) => <Line key={p} type="monotone" dataKey={p} name={p} yAxisId={i === 0 ? 'left' : 'right'} stroke={COLORS[i % COLORS.length]} strokeWidth={2} dot={false} connectNulls={false} isAnimationActive={false} />)}</LineChart></ResponsiveContainer>}
-      </div>
-      <p className="border-t border-slate-100 px-5 py-3 text-[10px] text-muted">Seri dengan satuan berbeda memakai sumbu terpisah. Nilai null tidak diganti nol.</p>
+      <div role="group" aria-label="Rentang waktu" className="flex flex-wrap gap-2">{(['1H', '6H', '24H', '7D', 'ALL'] as HistoryRange[]).map(r => <button key={r} type="button" onClick={() => setRange(r)} aria-pressed={range === r} className={`rounded-lg border px-3 py-2 ${range === r ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border'}`}>{r === 'ALL' ? 'Semua tersedia' : r}</button>)}</div>
+      <div role="group" aria-label="Parameter historis" className="flex flex-wrap gap-2">{!compare && <button type="button" onClick={() => setSelected([...historyParameters])} className="rounded-lg border border-border px-3 py-2">Semua parameter</button>}{historyParameters.map(p => <button key={p} type="button" onClick={() => toggle(p)} aria-pressed={selected.includes(p)} className={`rounded-lg border px-3 py-2 ${selected.includes(p) ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border'}`}>{parameters[p].label}</button>)}</div>
+      <p className="text-muted">Arsip 90 hari, interval 5 menit. Periode dihitung dari timestamp terakhir arsip. Tampilan periode panjang mempertahankan ekstrem dan celah; statistik memakai sampel mentah. GEN-001–GEN-003 memiliki enam channel utama; GEN-004 menguji arsip kosong.</p>
+      {!device.online && <p role="status" className="text-amber-700">Unit sedang offline. Sampel historis yang tersimpan tetap dapat ditampilkan; tidak ada pembacaan terkini.</p>}
     </Panel>
+    {selected.length === 0 ? <EmptyState title="Pilih parameter" description="Pilih minimal satu parameter untuk menampilkan histori." /> : compare ? <HistoryChart key={`${device.id}:${range}:${selected.join(',')}`} deviceId={device.id} selected={selected} series={series} /> : <div className="grid gap-5 xl:grid-cols-2">{selected.map(p => <HistoryChart key={`${device.id}:${range}:${p}`} deviceId={device.id} selected={[p]} series={series} />)}</div>}
+    <CapabilityHistory chart />
   </div>;
 }

@@ -44,7 +44,7 @@ export function AppShell() {
       </header>
       <main id="main-content" className="mx-auto max-w-[1680px] px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-5 flex items-center gap-2 text-[11px] text-muted"><span>Workspace</span><span className="text-slate-300">/</span><span className="font-medium text-foreground">{page}</span></div>
-        {storageError && <div role="alert" className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">Preferensi site tidak dapat disimpan. Halaman tetap berfungsi selama sesi ini.</div>}
+        {storageError && <div role="alert" className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800">Sebagian pengaturan tidak dapat disimpan. Perubahan tetap tersedia selama sesi ini.</div>}
         <Outlet />
         <footer className="mt-7 flex flex-wrap items-center justify-between gap-2 border-t border-border py-4 text-[10px] text-muted"><span>GensetMonitor</span><span className="flex items-center gap-1.5"><Clock3 size={12} />Pembaruan terakhir: {dateTime(DEMO_NOW)}</span></footer>
       </main>

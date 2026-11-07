@@ -22,7 +22,7 @@
   {
     "id": "machine-02",
     "item": 2,
-    "name": "Motor awal deret poros",
+    "name": "Motor AC",
     "template": "motor",
     "asset": "assets/machines/motor.svg",
     "function": "Motor pada deret poros konseptual.",
@@ -36,7 +36,7 @@
       "PDF P&ID Genset PLTS (draf)"
     ],
     "notes": [
-      "Jenis dan rating belum dikonfirmasi. ST-401 terkait deret poros, bukan sensor khusus motor ini."
+      "Jenis motor AC dikonfirmasi pengguna. Rating, jumlah fasa dan detail kopling belum dikonfirmasi. ST-401 terkait deret poros, bukan sensor khusus motor ini."
     ]
   },
   {

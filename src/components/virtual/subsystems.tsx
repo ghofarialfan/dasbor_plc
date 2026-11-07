@@ -1,86 +1,94 @@
-import { useState } from 'react';
 import { useDemo } from '@/context/demo-context';
-import { ventilationFanStatus, ventilationFanRotates, ventilationFanStatusLabels } from '@/data/demo';
-import type { EquipmentViewProps, VentilationFanStatus } from '@/types';
-import { DialogTrigger } from '@/components/ui/dialog';
-
-function bladePath(cx: number, cy: number) {
-  return `M${cx} ${cy} C${cx - 22} ${cy - 17} ${cx - 22} ${cy - 42} ${cx - 2} ${cy - 43} C${cx + 17} ${cy - 44} ${cx + 23} ${cy - 24} ${cx} ${cy} Z`;
-}
-
-export function FanBlades({ cx, cy, status, paused }: { cx: number; cy: number; status: VentilationFanStatus; paused: boolean }) {
-  const color = status === 'running' ? '#335879' : '#94a3b8';
-  return <g className="ventilation-fan-blades" style={{ transformOrigin: `${cx}px ${cy}px`, animationPlayState: ventilationFanRotates(status, paused) ? 'running' : 'paused' }} pointerEvents="none" aria-hidden="true">
-    {[0, 90, 180, 270].map(angle => <path key={angle} d={bladePath(cx, cy)} transform={`rotate(${angle} ${cx} ${cy})`} fill={color} />)}
-  </g>;
-}
-
-function Node({ id, x, y, label, sub, selectedId, onSelect }: { id: string; x: number; y: number; label: string; sub: string; selectedId: string; onSelect: (id: string) => void }) {
-  const active = selectedId === id;
-  return <DialogTrigger asChild><g role="button" tabIndex={0} aria-label={`${label}, ${sub}. Buka detail`} onClick={ev => { ev.currentTarget.focus(); onSelect(id); }} onKeyDown={ev => {
-    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.currentTarget.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
-  }} transform={`translate(${x} ${y})`} className="machine-part cursor-pointer">
-    <title>{label} · {sub}</title>
-    <rect width="150" height="58" rx="10" fill={active ? '#eff6ff' : '#ffffff'} stroke={active ? '#2563eb' : '#cbd5e1'} strokeWidth="2" />
-    <text x="75" y="24" textAnchor="middle" fontSize="12" fill="#233d60" fontWeight="600">{label}</text>
-    <text x="75" y="42" textAnchor="middle" fontSize="12" fill="#64748b">{sub}</text>
-  </g></DialogTrigger>;
-}
-
-export function DriverOutput({ selectedId, onSelect }: EquipmentViewProps) {
-  const row1: [string, string, string][] = [['pv', 'PV-01', 'Panel surya'], ['cabinet', 'VFD-12', 'Kabinet 13'], ['bldc', 'BLDC 12', 'Penggerak'], ['motor', 'Motor 2', 'Item 2'], ['motor3', 'Motor 3', 'Item 3'], ['gearbox4', 'Gearbox 4', 'Item 4'], ['gearbox5', 'Gearbox 5', 'Item 5'], ['motor6', 'Motor 6', 'Item 6'], ['alternator', 'Alternator 7', 'Item 7'], ['gearbox8', 'Gearbox 8', 'Item 8'], ['gearbox9', 'Gearbox 9', 'Item 9']];
-  return <svg viewBox="0 0 760 570" className="block w-full min-w-[720px]" aria-label="Subsistem penggerak dan output">
-    {row1.map(([id, label, sub], i) => <Node key={id} id={id} x={20 + (i % 4) * 190} y={30 + Math.floor(i / 4) * 100} label={label} sub={sub} selectedId={selectedId} onSelect={onSelect} />)}
-    <text x="20" y="330" fontSize="13" fill="#64748b">Urutan penggerak: 2 → 3 → 4/5 → 6 → 7</text>
-    <Node id="pmg" x={20} y={360} label="PMG 10/11" sub="Belt" selectedId={selectedId} onSelect={onSelect} />
-    <Node id="avr" x={210} y={360} label="AVR-01" sub="Eksitasi" selectedId={selectedId} onSelect={onSelect} />
-    <Node id="prt" x={400} y={360} label="PRT-01" sub="Relay proteksi" selectedId={selectedId} onSelect={onSelect} />
-    <Node id="breaker" x={590} y={360} label="CB-01" sub="Breaker" selectedId={selectedId} onSelect={onSelect} />
-    <Node id="output" x={20} y={460} label="Output 17" sub="PM-01 · pengukuran" selectedId={selectedId} onSelect={onSelect} />
-    <text x="210" y="490" fontSize="13" fill="#64748b">Alternator 7 → CB-01 → output 17</text>
-  </svg>;
-}
-
-export function OilLube({ selectedId, onSelect }: EquipmentViewProps) {
-  const nodes: [string, string, string][] = [['oil19', 'TK-19', 'Item 19'], ['oil20', 'TK-20', 'Item 20'], ['hv201', 'HV-201', 'Valve'], ['s201', 'S-201', 'Strainer'], ['pump', 'P-201', 'Pompa · PT-201'], ['cv201', 'CV-201', 'Check valve'], ['f201', 'F-201', 'Filter · PDT-201'], ['manifold15', 'Manifold 15', 'Distribusi lube']];
-  return <svg viewBox="0 0 760 460" className="block w-full min-w-[720px]" aria-label="Subsistem oli pelumas">
-    {nodes.map(([id, label, sub], i) => <Node key={id} id={id} x={20 + (i % 4) * 190} y={30 + Math.floor(i / 4) * 100} label={label} sub={sub} selectedId={selectedId} onSelect={onSelect} />)}
-    <Node id="shaft-train" x={210} y={240} label="Lube poros" sub="Titik pelumasan" selectedId={selectedId} onSelect={onSelect} />
-    <Node id="pmg" x={400} y={240} label="Lube PMG" sub="Titik pelumasan" selectedId={selectedId} onSelect={onSelect} />
-    <text x="20" y="340" fontSize="13" fill="#64748b">Tangki → HV-201 → S-201 → P-201 → CV-201 → F-201 → manifold 15</text>
-    <text x="20" y="365" fontSize="13" fill="#64748b">Titik lube poros &amp; PMG → kembali ke tangki</text>
-    <text x="20" y="390" fontSize="13" fill="#64748b">LSL-19/20 · TT-201 · PT-201 · PDT-201: pilih komponen untuk detail.</text>
-    <text x="20" y="420" fontSize="13" fill="#64748b">P-201: lokasi fisik belum dikonfirmasi.</text>
-  </svg>;
-}
-
-export function Ventilation({ selectedId, onSelect }: EquipmentViewProps) {
-  const { device } = useDemo();
-  const [paused, setPaused] = useState(false);
-  const status = ventilationFanStatus(device);
-  return <div className="space-y-2">
-    <div className="flex flex-wrap items-center gap-2 text-xs"><span className="text-muted">M-301: {ventilationFanStatusLabels[status]}</span><button type="button" aria-pressed={paused} onClick={() => setPaused(v => !v)} className="rounded-lg border border-border px-3 py-2 hover:bg-blue-50">{paused ? 'Lanjutkan animasi' : 'Jeda animasi'}</button><span className="text-muted">Kecepatan animasi tidak mewakili RPM.</span></div>
-    <svg viewBox="0 0 960 280" className="block w-full min-w-[900px]" aria-label="Subsistem ventilasi">
-      <Node id="lv301" x={20} y={40} label="LV-301" sub="Louver masuk · TT-301" selectedId={selectedId} onSelect={onSelect} />
-      <Node id="f301" x={200} y={40} label="F-301" sub="Filter · PDT-301" selectedId={selectedId} onSelect={onSelect} />
-      <DialogTrigger asChild><g role="button" tabIndex={0} aria-label="M-301 dan DMP-301. Buka detail" onClick={ev => { ev.currentTarget.focus(); onSelect('ventilation'); }} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.currentTarget.dispatchEvent(new MouseEvent('click', { bubbles: true })); } }} transform="translate(380 20)" className="machine-part cursor-pointer"><rect width="190" height="96" rx="12" fill={selectedId === 'ventilation' ? '#eff6ff' : '#edf2f7'} stroke={selectedId === 'ventilation' ? '#2563eb' : '#466389'} strokeWidth="2" /><text x="95" y="22" textAnchor="middle" fontSize="12" fill="#233d60" fontWeight="600">M-301 · DMP-301</text><circle cx="95" cy="62" r="34" fill="#dbe5ef" stroke="#466389" strokeWidth="2" /><FanBlades cx={95} cy={62} status={status} paused={paused} /><circle cx="95" cy="62" r="6" fill="#64748b" /><text x="95" y="112" textAnchor="middle" fontSize="12" fill="#64748b">{ventilationFanStatusLabels[status]}</text></g></DialogTrigger>
-      <Node id="ventilation" x={590} y={40} label="Ruang unit" sub="TT-303 · AT-301" selectedId={selectedId} onSelect={onSelect} />
-      <Node id="lv302" x={760} y={40} label="LV-302" sub="Louver keluar · TT-304" selectedId={selectedId} onSelect={onSelect} />
-      <line x1="170" y1="69" x2="200" y2="69" stroke="#466389" strokeWidth="2" />
-      <line x1="350" y1="69" x2="380" y2="69" stroke="#466389" strokeWidth="2" />
-      <line x1="570" y1="69" x2="600" y2="69" stroke="#466389" strokeWidth="2" />
-      <line x1="660" y1="69" x2="760" y2="69" stroke="#466389" strokeWidth="2" />
-      <text x="20" y="180" fontSize="11" fill="#64748b">LV-301 → F-301 → M-301 → DMP-301 → ruang unit → LV-302.</text>
-      <text x="20" y="200" fontSize="11" fill="#64748b">AT-301: RH atau titik embun belum ditetapkan. PDT-301 beda tekanan filter udara.</text>
-    </svg>
+import type { EquipmentViewProps } from '@/types';
+import { shaftConnections, draftCableConnections, pmgConnections, oilConnections, orderedItems } from './subsystem-model';
+import { Section, ScrollDiagram, DetailCard, ItemCard, EquipmentCards, Connection, PathLegend, InstrumentReferences } from './subsystem-parts';
+export function DriverOutput(views: EquipmentViewProps) {
+  const rows = [
+    { title: 'Deret mekanis', connections: shaftConnections },
+    { title: 'Kabel draf · PLTS dan perangkat kabinet', connections: draftCableConnections },
+  ];
+  return <div className="space-y-4">
+    <p className="text-xs leading-relaxed text-muted">Hubungan komponen mengikuti registry skematik. Garis bukan konfirmasi arah putaran, transfer daya, atau koneksi fisik/OEM. Geser deret bila diperlukan.</p>
+    {rows.map(row => <Section key={row.title} title={row.title}><ScrollDiagram label={row.title}><div className="flex w-max items-stretch">{orderedItems(row.connections).map((item, index) => <div key={item} className="flex">{index > 0 && <Connection connection={row.connections[index - 1]} />}<ItemCard item={item} {...views} /></div>)}</div></ScrollDiagram></Section>)}
+    <Section title="PMG dan keluaran · cabang kabel draf">
+      <ScrollDiagram label="Belt PMG dan cabang kabel menuju output 17"><div className="w-max space-y-3">{pmgConnections.filter(connection => connection.style === 'belt').map(belt => {
+        if (!('item' in belt.to)) return null;
+        const item = belt.to.item;
+        const branch = pmgConnections.find(connection => connection.style === 'cable' && 'item' in connection.from && connection.from.item === item);
+        const output = pmgConnections.find(connection => connection.id === 'cable-output-17');
+        return <div key={belt.id} className="flex items-stretch"><span className="flex w-36 shrink-0 items-center rounded-xl border border-dashed border-slate-300 p-3 text-xs text-muted">Sumber belt belum dikonfirmasi</span><Connection connection={belt} /><ItemCard item={item} {...views} />{branch && <Connection connection={branch} />}<span className="flex w-24 shrink-0 items-center justify-center text-center text-[11px] text-muted">Simpul kabel bersama</span>{output && <Connection connection={output} />}<ItemCard item={17} {...views} /></div>;
+      })}</div></ScrollDiagram>
+      <p className="text-[11px] leading-relaxed text-muted">Kedua baris bergabung pada simpul kabel dan Output 17 yang sama; pengulangan output hanya referensi. Sumber dan rute belt belum dikonfirmasi, bukan koneksi dari gearbox 9.</p>
+    </Section>
+    <PathLegend styles={['shaft', 'belt', 'cable']} />
+    <Section title="Referensi fungsional tambahan">
+      <p className="text-xs leading-relaxed text-muted">Alternator 7 → CB-01 → Output 17 adalah relasi fungsional konseptual, terpisah dari kabel merah. Posisi CB-01 belum dikonfirmasi. AVR dan relay tidak menambahkan rute fisik baru; PM-01 mengukur, bukan konversi daya.</p>
+      <EquipmentCards {...views} ids={['alternator', 'breaker', 'output', 'avr', 'prt', 'shaft-train']} />
+      <InstrumentReferences ids={['motor', 'motor3', 'motor6', 'alternator', 'gearbox45', 'pmg', 'bldc', 'cabinet', 'output', 'prt', 'shaft-train']} />
+    </Section>
   </div>;
 }
 
-export function Security({ selectedId, onSelect }: EquipmentViewProps) {
-  const nodes: [string, string, string][] = [['estop', 'ES-01', 'Hardwired'], ['siren', 'SIR-01', 'Sirine & beacon'], ['gps', 'GPS-01', 'Geofence'], ['dongle', 'DNG-01', 'Security key'], ['spd', 'SPD-01', 'Proteksi petir']];
-  return <svg viewBox="0 0 760 300" className="block w-full min-w-[900px]" aria-label="Subsistem keamanan">
-    {nodes.map(([id, label, sub], i) => <Node key={id} id={id} x={20 + (i % 4) * 190} y={30 + Math.floor(i / 4) * 100} label={label} sub={sub} selectedId={selectedId} onSelect={onSelect} />)}
-    <text x="20" y="260" fontSize="13" fill="#64748b">ES-01 hardwired, di luar logika PLC. Tidak ada kontrol aktif; kontrol jarak jauh belum diaktifkan.</text>
-  </svg>;
+export function OilLube(views: EquipmentViewProps) {
+  const tanks = [...new Set(oilConnections.map(connection => connection.from.item))];
+  return <div className="space-y-4">
+    <p className="text-xs leading-relaxed text-muted">Pemetaan suplai langsung dikonfirmasi pengguna. Rute pipa fisik dan jalur return belum dikonfirmasi; garis bukan indikator aliran aktual.</p>
+    <div className="grid min-w-0 gap-4 xl:grid-cols-2">{tanks.map(tank => <Section key={tank} title={`Suplai TK-${tank}`}><ScrollDiagram label={`TK-${tank} dan pasangan gearbox`}><div className="w-max space-y-3">{oilConnections.filter(connection => connection.from.item === tank).map(connection => <div key={connection.id} className="flex items-stretch"><ItemCard item={tank} {...views} /><Connection connection={connection} /><ItemCard item={connection.to.item} {...views} /></div>)}</div></ScrollDiagram><p className="text-[11px] text-muted">Kartu tangki berulang merujuk ke tangki yang sama.</p></Section>)}</div>
+    <PathLegend styles={['lubrication']} />
+    <Section title="Perangkat pendukung dari draf · belum dirangkai sebagai jalur fisik">
+      <EquipmentCards {...views} ids={['hv201', 's201', 'pump', 'cv201', 'f201', 'manifold15']} />
+      <p className="text-xs leading-relaxed text-muted">Lokasi fisik P-201 dan fungsi rinci manifold 15 belum dikonfirmasi. Tidak ada tambahan sambungan ke PMG atau poros, maupun jalur return pada diagram ini.</p>
+      <InstrumentReferences ids={['oil19', 'oil20', 'pump', 'f201']} />
+      <p className="text-[11px] leading-relaxed text-muted">LSL-19/20 adalah status digital low-level, bukan persentase isi tangki. Satuan tekanan PT-201 belum ditetapkan.</p>
+    </Section>
+  </div>;
 }
 
+export function Ventilation(views: EquipmentViewProps) {
+  return <div className="space-y-4">
+    <p className="rounded-lg border border-border bg-slate-50 px-3 py-2 text-xs font-medium text-muted">Skematik sistem · bukan kondisi aktual perangkat</p>
+    <p className="text-xs leading-relaxed text-muted">Urutan fungsional dari draf, bukan bukti aliran udara aktual. Ilustrasi statis tidak menunjukkan perangkat berjalan maupun berhenti. Geser diagram bila diperlukan.</p>
+    <Section title="Ventilasi ruang unit">
+      <ScrollDiagram label="Diagram fungsional ventilasi, dapat digeser">
+        <div className="flex w-max items-stretch">
+          <DetailCard {...views} id="lv301" label="Louver masuk" sub="LV-301 · TT-301" />
+          <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
+          <DetailCard {...views} id="f301" label="Filter udara" sub="F-301 · PDT-301" />
+          <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
+          <div className="space-y-2">
+            <DetailCard {...views} id="ventilation" label="Kipas ventilasi" sub="M-301" />
+            <p className="max-w-36 rounded-md bg-slate-100 px-2 py-1 text-[11px] text-muted">Status belum tersedia</p>
+          </div>
+          <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
+          <div className="space-y-2">
+            <DetailCard {...views} id="ventilation" label="Damper" sub="DMP-301" />
+            <p className="max-w-36 rounded-md bg-slate-100 px-2 py-1 text-[11px] text-muted">Posisi belum tersedia</p>
+          </div>
+          <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
+          <DetailCard {...views} id="ventilation" label="Ruang unit" sub="TT-303 · AT-301" />
+          <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
+          <DetailCard {...views} id="lv302" label="Louver keluar" sub="LV-302 · TT-304" />
+        </div>
+      </ScrollDiagram>
+      <p className="text-[11px] leading-relaxed text-muted">Garis putus-putus menunjukkan urutan fungsional, bukan rute fisik terverifikasi. Kipas, damper, dan ruang unit membuka detail kelompok ventilasi yang sama; belum ada pemetaan status perangkat aktual.</p>
+    </Section>
+    <p className="text-xs leading-relaxed text-muted">Status generator atau koneksi unit tidak membuktikan kipas berjalan. Kondisi ventilasi belum dapat ditentukan tanpa feedback perangkat dan aturan evaluasi yang terverifikasi. AT-301: RH atau titik embun belum ditetapkan.</p>
+    <InstrumentReferences ids={['lv301', 'f301', 'ventilation', 'lv302']} />
+  </div>;
+}
+
+export function Security(views: EquipmentViewProps) {
+  const { device } = useDemo();
+  const groups = [
+    { title: 'Penghentian darurat', ids: ['estop'] },
+    { title: 'Peringatan', ids: ['siren'] },
+    { title: 'Lokasi & akses', ids: ['gps', 'dongle'] },
+    { title: 'Proteksi listrik', ids: ['spd', 'prt', 'breaker'] },
+  ];
+  return <div className="space-y-4">
+    <p className="text-xs leading-relaxed text-muted">Perangkat dikelompokkan menurut fungsi, bukan urutan aliran atau rangkaian keselamatan terverifikasi. Tidak adanya alarm bukan konfirmasi kondisi aman.</p>
+    <div className="grid gap-4 sm:grid-cols-2">{groups.map(group => <Section key={group.title} title={group.title}><EquipmentCards {...views} ids={group.ids} /><p className="text-xs text-muted">Status perangkat: {device.online ? 'Belum ada data' : 'Offline · Belum ada data terkini'}.</p></Section>)}</div>
+    <p className="rounded-xl border border-border bg-slate-50 p-3 text-xs leading-relaxed text-muted">ES-01 hardwired, di luar logika PLC. Mode baca saja: tidak ada reset, bypass, atau kontrol jarak jauh. PRT-01/CB-01 adalah referensi proteksi, bukan tambahan koneksi pada denah.</p>
+    <InstrumentReferences ids={groups.flatMap(group => group.ids)} />
+  </div>;
+}

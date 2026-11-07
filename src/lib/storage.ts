@@ -1,4 +1,4 @@
-const PREFIX = 'genset-demo:v1:';
+export const PREFIX = 'genset-demo:v1:';
 
 export function loadJSON<T>(key: string, fallback: T, validate?: (value: unknown) => value is T): T {
   try {
@@ -25,8 +25,9 @@ export function removeAllDemoKeys() {
     const keys: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
-      if (k && (k.startsWith(PREFIX) || k.startsWith('genset-demo'))) keys.push(k);
+      if (k && (k.startsWith(PREFIX) || k === 'genset-demo-site')) keys.push(k);
     }
     keys.forEach(k => localStorage.removeItem(k));
-  } catch { /* ignore */ }
+    return keys.every(k => localStorage.getItem(k) === null);
+  } catch { return false; }
 }
