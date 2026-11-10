@@ -1009,11 +1009,12 @@ console.log('PASS: consecutive functional persistence commits, invalid-value rej
 // Global theme validation remains independent of telemetry and profile preferences.
 const themeSource = await readFile(new URL('../src/lib/theme.ts', import.meta.url), 'utf8');
 const themeModule = await import(`data:text/javascript;base64,${Buffer.from(ts.transpileModule(themeSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText).toString('base64')}`);
-assert.equal(themeModule.defaultTheme, 'light');
+assert.equal(themeModule.defaultTheme, 'dark');
 for (const value of ['light', 'dark']) assert.ok(themeModule.isTheme(value));
 for (const value of [null, undefined, '', 'system', 'DARK', {}, 0, true]) assert.equal(themeModule.isTheme(value), false);
 const bootstrapSource = await readFile(new URL('../index.html', import.meta.url), 'utf8');
-assert.ok(bootstrapSource.includes('genset-demo:v1:theme') && bootstrapSource.includes("theme === 'dark'"));
+assert.ok(bootstrapSource.includes('genset-demo:v1:theme') && bootstrapSource.includes("let theme = 'dark'") && bootstrapSource.includes("=== 'light'"));
+assert.ok(bootstrapSource.includes('content="#111c2e"'));
 const themeToggleSource = await readFile(new URL('../src/components/theme-toggle.tsx', import.meta.url), 'utf8');
 assert.ok(themeToggleSource.includes('role="switch"') && themeToggleSource.includes('aria-checked='));
 assert.ok(themeToggleSource.includes("usePersistedState('theme', defaultTheme, isTheme)"));

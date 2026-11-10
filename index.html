@@ -3,16 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#10233f" />
+    <meta name="theme-color" content="#111c2e" />
     <script>
-      // Apply the validated preference before first paint; blocked storage stays light.
+      // Dark is the default; only a valid stored "light" preference opts out before first paint.
+      let theme = 'dark';
       try {
-        const theme = JSON.parse(localStorage.getItem('genset-demo:v1:theme') || '"light"');
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-          document.documentElement.style.colorScheme = 'dark';
-        }
-      } catch { /* Default light theme. */ }
+        if (JSON.parse(localStorage.getItem('genset-demo:v1:theme')) === 'light') theme = 'light';
+      } catch { /* Missing, malformed or blocked storage keeps the dark default. */ }
+      if (theme === 'dark') document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = theme;
     </script>
     <meta name="description" content="Monitoring genset dan ringkasan parameter." />
     <title>Genset Monitor</title>

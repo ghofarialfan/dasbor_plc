@@ -17,12 +17,14 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.goto(base);
   const toggle = page.getByRole('switch', { name: 'Night mode' });
-  assert.equal(await toggle.getAttribute('aria-checked'), 'false');
+  // A first visit with no stored preference starts in night mode.
+  assert.equal(await toggle.getAttribute('aria-checked'), 'true');
+  assert.equal(await page.locator('html').evaluate(el => el.classList.contains('dark')), true);
   await toggle.focus();
   await page.keyboard.press('Space');
-  assert.equal(await toggle.getAttribute('aria-checked'), 'true');
-  for (const theme of ['dark', 'light']) {
-    if (theme === 'light') await toggle.click();
+  assert.equal(await toggle.getAttribute('aria-checked'), 'false');
+  for (const theme of ['light', 'dark']) {
+    if (theme === 'dark') await toggle.click();
     // Exercise every centralized status, including unknown (not present in the default fleet).
     for (const [status, definition] of Object.entries(deviceStatusDefinitions)) {
       const actual = await page.evaluate(className => {
@@ -83,27 +85,38 @@ try {
       }
     }
   }
-  await page.getByRole('switch', { name: 'Night mode' }).click();
+  // The loop ends in night mode (stored "dark"); choosing light persists across reloads.
   await page.reload();
   assert.equal(await toggle.getAttribute('aria-checked'), 'true');
+  await page.getByRole('switch', { name: 'Night mode' }).click();
+  await page.reload();
+  assert.equal(await toggle.getAttribute('aria-checked'), 'false');
   const second = await context.newPage();
   await second.goto(base);
   await second.getByRole('switch', { name: 'Night mode' }).waitFor();
+  assert.equal(await second.getByRole('switch', { name: 'Night mode' }).getAttribute('aria-checked'), 'false');
   await second.getByRole('switch', { name: 'Night mode' }).click();
-  await page.waitForFunction(() => !document.documentElement.classList.contains('dark'));
+  await page.waitForFunction(() => document.documentElement.classList.contains('dark'));
   await second.evaluate(key => localStorage.setItem(key, '"invalid"'), key);
   await page.reload();
-  assert.equal(await toggle.getAttribute('aria-checked'), 'false');
-  await page.evaluate(key => localStorage.setItem(key, '"dark"'), key);
+  assert.equal(await toggle.getAttribute('aria-checked'), 'true');
   // Verify the head bootstrap without React or its styles/scripts.
   const boot = await context.newPage();
   await boot.route('**/src/main.tsx', route => route.abort());
-  await boot.goto(base);
-  assert.equal(await boot.locator('html').evaluate(el => el.classList.contains('dark')), true);
-  await page.reload();
+  const bootTheme = async value => {
+    await boot.goto(base);
+    await boot.evaluate(([storageKey, stored]) => stored === null ? localStorage.removeItem(storageKey) : localStorage.setItem(storageKey, stored), [key, value]);
+    await boot.reload();
+    return [await boot.locator('html').evaluate(el => el.classList.contains('dark')), await boot.locator('html').evaluate(el => el.style.colorScheme)];
+  };
+  assert.deepEqual(await bootTheme(null), [true, 'dark']);
+  assert.deepEqual(await bootTheme('"light"'), [false, 'light']);
+  assert.deepEqual(await bootTheme('"dark"'), [true, 'dark']);
+  assert.deepEqual(await bootTheme('"invalid"'), [true, 'dark']);
+  assert.deepEqual(await bootTheme('{broken'), [true, 'dark']);
   await page.evaluate(key => localStorage.removeItem(key), key);
   await page.reload();
-  assert.equal(await toggle.getAttribute('aria-checked'), 'false');
+  assert.equal(await toggle.getAttribute('aria-checked'), 'true');
   // Contrast checks for the normal text palette against the darkest and raised surfaces.
   const luminance = hex => {
     const rgb = hex.match(/../g).map(v => parseInt(v, 16) / 255).map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
@@ -122,11 +135,12 @@ try {
   });
   const blockedPage = await blocked.newPage();
   await blockedPage.goto(base);
-  await blockedPage.getByRole('switch', { name: 'Night mode' }).click();
   assert.equal(await blockedPage.getByRole('switch', { name: 'Night mode' }).getAttribute('aria-checked'), 'true');
+  await blockedPage.getByRole('switch', { name: 'Night mode' }).click();
+  assert.equal(await blockedPage.getByRole('switch', { name: 'Night mode' }).getAttribute('aria-checked'), 'false');
   await blockedPage.getByRole('alert').filter({ hasText: 'Tema tidak dapat disimpan' }).waitFor();
   await blockedPage.getByRole('link', { name: 'Camera View', exact: true }).first().click();
-  assert.equal(await blockedPage.getByRole('switch', { name: 'Night mode' }).getAttribute('aria-checked'), 'true');
+  assert.equal(await blockedPage.getByRole('switch', { name: 'Night mode' }).getAttribute('aria-checked'), 'false');
   console.log('PASS: storage failure retains session theme across navigation');
   assert.deepEqual(errors, []);
   await blocked.close();

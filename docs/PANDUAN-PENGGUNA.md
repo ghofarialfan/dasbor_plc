@@ -399,8 +399,8 @@ Panduan disusun berdasarkan implementasi frontend pada tanggal dokumen, bukan ha
 
 ## Mode terang dan night mode
 
-Gunakan toggle **Night mode** (ikon bulan/matahari) di header untuk mengganti tema seluruh halaman. Toggle tersedia pada desktop dan mobile serta dapat dioperasikan dengan keyboard. Tema awal adalah terang.
+Gunakan toggle **Night mode** (ikon bulan/matahari) di header untuk mengganti tema seluruh halaman. Toggle tersedia pada desktop dan mobile serta dapat dioperasikan dengan keyboard. Tema awal adalah night mode; pilih mode terang melalui toggle yang sama.
 
 Night mode memakai palet Deep Navy, Slate, dan Electric Blue. Panel, tabel, form, grafik, gauge, dialog, serta menu mengikuti tema; foto kamera, thermal, dan aset gambar mesin mempertahankan warna aslinya. Tema tidak mengubah nilai sensor, status, ambang peringatan, atau data historis.
 
-Pilihan disimpan di browser dan disinkronkan antar-tab browser. Jika penyimpanan gagal, perubahan tetap tersedia selama sesi dan aplikasi menampilkan pemberitahuan. **Kembalikan pengaturan awal** pada Profile menghapus preferensi tema dan mengembalikan mode terang.
+Pilihan disimpan di browser dan disinkronkan antar-tab browser. Jika penyimpanan gagal, perubahan tetap tersedia selama sesi dan aplikasi menampilkan pemberitahuan. **Kembalikan pengaturan awal** pada Profile menghapus preferensi tema dan mengembalikan night mode sebagai tema awal.
