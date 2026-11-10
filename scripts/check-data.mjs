@@ -244,6 +244,15 @@ assert.deepEqual(devices.slice(0, 4).map(device => statusModel.deviceStatus(devi
 for (const status of ['running', 'standby', 'unknown']) assert.equal(statusModel.deviceStatusKey({ online: false, status }), 'offline');
 assert.equal(statusModel.deviceStatus({ online: true, status: 'unknown' }).label, 'Tidak diketahui');
 assert.ok(statusModel.deviceStatusDefinitions.standby.className.includes('amber'));
+for (const [status, tokens] of Object.entries({
+  running: ['bg-emerald-50', 'text-emerald-700', 'dark:bg-success-soft', 'dark:text-success'],
+  standby: ['bg-amber-50', 'text-amber-700', 'dark:bg-warning-soft', 'dark:text-warning'],
+  offline: ['bg-slate-100', 'text-slate-600', 'dark:bg-surface-hover', 'dark:text-muted'],
+  unknown: ['bg-slate-100', 'text-slate-600', 'dark:bg-surface-hover', 'dark:text-muted'],
+})) {
+  assert.deepEqual(statusModel.deviceStatusDefinitions[status].className.split(' '), tokens, `${status}: retain light colors and apply semantic dark colors`);
+}
+
 assert.deepEqual([devices[2].telemetry.rpm, devices[2].telemetry.voltage, devices[2].telemetry.frequency], [0, 0, 0]);
 assert.ok(alarms.some(alarm => alarm.deviceId === devices[1].id && alarm.severity === 'warning'), 'running and warning coexist');
 const sharedStatusSource = await readFile(new URL('../src/components/shared.tsx', import.meta.url), 'utf8');

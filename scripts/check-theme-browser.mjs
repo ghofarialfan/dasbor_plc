@@ -1,5 +1,10 @@
 // PLAYWRIGHT_MODULE=/absolute/path/to/playwright/index.mjs node scripts/check-theme-browser.mjs
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import ts from 'typescript';
+const statusSource = await readFile(new URL('../src/lib/device-status.ts', import.meta.url), 'utf8');
+const statusCode = ts.transpileModule(statusSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+const { deviceStatusDefinitions } = await import(`data:text/javascript;base64,${Buffer.from(statusCode).toString('base64')}`);
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE ?? 'playwright');
 const browser = await chromium.launch({ headless: true });
 const base = process.env.OVERVIEW_URL ?? 'http://127.0.0.1:5173';
@@ -18,6 +23,28 @@ try {
   assert.equal(await toggle.getAttribute('aria-checked'), 'true');
   for (const theme of ['dark', 'light']) {
     if (theme === 'light') await toggle.click();
+    // Exercise every centralized status, including unknown (not present in the default fleet).
+    for (const [status, definition] of Object.entries(deviceStatusDefinitions)) {
+      const actual = await page.evaluate(className => {
+        const badge = document.createElement('span');
+        badge.className = className;
+        document.body.append(badge);
+        const style = getComputedStyle(badge);
+        const colors = [style.backgroundColor, style.color];
+        badge.remove();
+        return colors;
+      }, definition.className);
+      const expected = theme === 'dark'
+        ? status === 'running' ? ['rgb(16, 56, 47)', 'rgb(52, 211, 153)']
+          : status === 'standby' ? ['rgb(61, 48, 22)', 'rgb(251, 191, 36)']
+          : ['rgb(36, 55, 80)', 'rgb(167, 182, 203)']
+        : status === 'running' ? ['rgb(236, 253, 245)', 'rgb(4, 120, 87)']
+          : status === 'standby' ? ['rgb(255, 251, 235)', 'rgb(180, 83, 9)']
+          : ['rgb(241, 245, 249)', 'rgb(71, 85, 105)'];
+      assert.deepEqual(actual, expected, `${theme} ${status} badge colors`);
+    }
+    console.log(`PASS: ${theme} Running, Standby, Offline and unknown badge colors`);
+
     for (const viewport of [{ width: 1920, height: 1080 }, { width: 1366, height: 768 }, { width: 390, height: 844 }]) {
       await page.setViewportSize(viewport);
       for (const route of routes) {
