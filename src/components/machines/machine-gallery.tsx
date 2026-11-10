@@ -21,7 +21,7 @@ export function MachineGallery({ deviceId, initialMachineId }: { deviceId: strin
   const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   return <div className="space-y-5">
-    <p role="note" className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-xs font-medium text-blue-800">{deviceId} · Inventaris konseptual. Registri referensi bersama, bukan inventaris aktual terverifikasi per unit. Gambar merupakan ilustrasi generik, bukan foto perangkat.</p>
+    <p role="note" className="rounded-xl border border-blue-200 dark:border-accent/40 bg-blue-50 dark:bg-accent-soft px-4 py-3 text-xs font-medium text-blue-800 dark:text-accent">{deviceId} · Inventaris konseptual. Registri referensi bersama, bukan inventaris aktual terverifikasi per unit. Gambar merupakan ilustrasi generik, bukan foto perangkat.</p>
     <Dialog open={open} onOpenChange={setOpen}>
       <Panel>
         <div className="flex flex-wrap gap-2 p-5"><input aria-label="Cari mesin atau tag" type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Cari mesin, item, atau tag" className="min-w-0 flex-1 rounded-lg border border-border p-2 text-xs" /><select aria-label="Jenis mesin" value={kind} onChange={e => setKind(e.target.value)} className="rounded-lg border border-border p-2 text-xs"><option value="all">Semua jenis</option>{Array.from(new Set(machines.map(m => m.template).filter(Boolean))).map(value => <option key={value} value={value!}>{value}</option>)}</select><button type="button" onClick={() => { setQuery(''); setKind('all'); }} className="rounded-lg border border-border px-3 py-2 text-xs">Reset filter</button></div>

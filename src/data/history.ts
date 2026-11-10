@@ -33,6 +33,17 @@ export function alignHistory(selected: Parameter[], series: Partial<Record<Param
   return [...rows.values()].sort((a, b) => Date.parse(a.time) - Date.parse(b.time));
 }
 
+// Preserve both sides of every digital transition, including null boundaries.
+// The result may exceed a visual point budget: transitions must not be discarded.
+export function digitalHistoryIndices(rows: HistoryPoint[]): number[] {
+  if (!rows.length) return [];
+  const kept = new Set<number>([0, rows.length - 1]);
+  for (let i = 1; i < rows.length; i++) {
+    if (rows[i].value !== rows[i - 1].value) { kept.add(i - 1); kept.add(i); }
+  }
+  return [...kept].sort((a, b) => a - b);
+}
+
 // Keep bucket extrema and null boundaries. Statistics always use raw samples.
 export function historyDisplayIndices(rows: ({ time: string } & Partial<Record<Parameter, number | null>>)[], selected: Parameter[], budget = 800) {
   if (rows.length <= budget) return rows.map((_, i) => i);

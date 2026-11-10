@@ -16,7 +16,7 @@ export function MachineIllustration({ selectedId, onSelect, showSupportingPanels
     <p className="text-xs font-semibold text-muted">Ilustrasi skematik</p>
     <p className="text-xs leading-relaxed text-muted">Tata letak konseptual; posisi presentasi, bukan ukuran atau posisi fisik terverifikasi. Ilustrasi aset generik, bukan geometri OEM.</p>
     <div className="min-w-0">
-      <div className="min-w-0 overflow-x-auto overscroll-x-contain rounded-xl border border-border bg-slate-50 touch-pan-x touch-pan-y" role="region" aria-label="Denah konseptual equipment interaktif, dapat digeser" tabIndex={0}>
+      <div className="min-w-0 overflow-x-auto overscroll-x-contain rounded-xl border border-border bg-slate-50 dark:bg-surface-soft touch-pan-x touch-pan-y" role="region" aria-label="Denah konseptual equipment interaktif, dapat digeser" tabIndex={0}>
         <svg viewBox={`0 0 ${overviewViewBox.width} ${overviewViewBox.height}`} preserveAspectRatio="xMidYMid meet" className="mx-auto block h-auto w-full min-w-[960px] max-w-[1440px]" aria-label="Tata letak konseptual equipment">
           <rect {...overviewBounds.container} rx="14" fill="#fff" stroke="#94a3b8" strokeWidth="2" />
           <rect {...overviewBounds.roof} rx="10" fill="#eef6fb" stroke="#bfceda" strokeWidth="2" />
@@ -70,9 +70,9 @@ export function MachineIllustration({ selectedId, onSelect, showSupportingPanels
     </div>
     {showSupportingPanels && <>
     <p className="rounded-lg border border-teal-100 bg-teal-50/50 px-3 py-2 text-xs leading-relaxed text-teal-900">Suplai oli langsung: TK-19 → Gearbox 4 &amp; 5; TK-20 → Gearbox 8 &amp; 9. Pemetaan dikonfirmasi pengguna; rute pipa fisik dan jalur return belum dikonfirmasi. Garis bukan indikator aliran aktual.</p>
-    <p className="rounded-lg border border-border bg-white px-3 py-2 text-xs text-muted">Item 18 · Belum teridentifikasi. Tidak ditampilkan pada denah karena posisi dan aset belum tersedia.</p>
+    <p className="rounded-lg border border-border bg-white dark:bg-surface px-3 py-2 text-xs text-muted">Item 18 · Belum teridentifikasi. Tidak ditampilkan pada denah karena posisi dan aset belum tersedia.</p>
     <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-    <div className="rounded-xl border border-blue-100 bg-blue-50/30 p-3"><h4 className="text-[10px] font-semibold uppercase tracking-wide text-blue-800">Relasi fungsional konseptual</h4><p className="mt-2 text-sm font-semibold">Alternator 7 → CB-01 → Output 17</p><p className="mb-3 mt-2 text-[11px] leading-relaxed text-muted">PM-01 pengukuran, bukan konversi. Relasi fungsi ini terpisah dari rute merah pada denah; posisi CB-01 belum dikonfirmasi.</p><div className="flex flex-wrap gap-2">{['alternator', 'breaker', 'output'].map(id => { const e = available.find(entry => entry.id === id)!; return <DialogTrigger asChild key={id}><button onClick={event => { event.currentTarget.focus(); onSelect(id); }} className={`rounded-lg border bg-white px-3 py-2 text-xs hover:bg-blue-50 ${selectedId === id ? 'border-blue-500' : 'border-border'}`}>{e.name} · {e.item}</button></DialogTrigger>; })}</div></div>
+    <div className="rounded-xl border border-blue-100 dark:border-accent/40 bg-blue-50/30 dark:bg-accent-soft/30 p-3"><h4 className="text-[10px] font-semibold uppercase tracking-wide text-blue-800 dark:text-accent">Relasi fungsional konseptual</h4><p className="mt-2 text-sm font-semibold">Alternator 7 → CB-01 → Output 17</p><p className="mb-3 mt-2 text-[11px] leading-relaxed text-muted">PM-01 pengukuran, bukan konversi. Relasi fungsi ini terpisah dari rute merah pada denah; posisi CB-01 belum dikonfirmasi.</p><div className="flex flex-wrap gap-2">{['alternator', 'breaker', 'output'].map(id => { const e = available.find(entry => entry.id === id)!; return <DialogTrigger asChild key={id}><button onClick={event => { event.currentTarget.focus(); onSelect(id); }} className={`rounded-lg border bg-white dark:bg-surface px-3 py-2 text-xs hover:bg-blue-50 dark:hover:bg-accent-soft ${selectedId === id ? 'border-blue-500' : 'border-border'}`}>{e.name} · {e.item}</button></DialogTrigger>; })}</div></div>
     <div className="grid gap-4 rounded-xl border border-border p-4 sm:grid-cols-2">
       {[
         { title: 'Kelistrikan', items: [['pv', 'PLTS'], ['cabinet', 'Kabinet / VFD'], ['bldc', 'BLDC'], ['pmg', 'PMG · 10/11'], ['avr', 'AVR']] },
@@ -82,7 +82,7 @@ export function MachineIllustration({ selectedId, onSelect, showSupportingPanels
         <h4 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted">{group.title}</h4>
         <div className="flex flex-wrap gap-2">{group.items.map(([id, label]) => {
           const e = available.find(entry => entry.id === id)!;
-          return <DialogTrigger asChild key={id}><button type="button" aria-label={`${label} · ${e.name} · ${e.item}. Buka detail`} onClick={event => { event.currentTarget.focus(); onSelect(id); }} className={`min-h-9 rounded-lg border px-3 py-2 text-left text-xs transition-colors hover:bg-blue-50 ${selectedId === id ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-border bg-white'}`}>{label}</button></DialogTrigger>;
+          return <DialogTrigger asChild key={id}><button type="button" aria-label={`${label} · ${e.name} · ${e.item}. Buka detail`} onClick={event => { event.currentTarget.focus(); onSelect(id); }} className={`min-h-9 rounded-lg border px-3 py-2 text-left text-xs transition-colors hover:bg-blue-50 dark:hover:bg-accent-soft ${selectedId === id ? 'border-blue-500 bg-blue-50 dark:bg-accent-soft text-blue-700 dark:text-accent' : 'border-border bg-white dark:bg-surface'}`}>{label}</button></DialogTrigger>;
         })}</div>
       </section>)}
     </div>

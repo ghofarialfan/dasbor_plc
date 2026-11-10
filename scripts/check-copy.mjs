@@ -37,7 +37,15 @@ function check(text, filename) {
      'genset-capability-demo.csv',
      'Simulasi eksplisit, bukan feedback aktual. Rentang/satuan tambahan adalah asumsi. Digital: 1 = aktif/true, 0 = tidak aktif/false. Timestamp terakhir ',
    ].includes(value.trimStart()));
-   if (!codeOnly && !statusProvenance && !motionProvenance && !controlProvenance && !capabilityProvenance && forbidden.test(value)) findings.push(`${filename}:${source.getLineAndCharacterOfPosition(n.pos).line + 1}: ${JSON.stringify(value.trim())}`);
+   const chartProvenance = [
+    ['/components/capability-history.tsx', '. Interval simulasi 5 menit dapat melewatkan trip singkat. Target dan skenario manual tidak termasuk.'],
+    ['/components/equipment-widget.tsx', 'Sinyal perhatian aktif (simulasi)'],
+    ['/components/equipment-widget.tsx', '⚠ Sinyal perhatian aktif (simulasi)'],
+    ['/components/overview/dashboard-history.tsx', 'Simulasi 5 menit · trip singkat dapat terlewat · celah bukan nol'],
+    ['/lib/equipment-capabilities.ts', 'Normal (demo)'],
+    ['/lib/equipment-capabilities.ts', 'Tidak normal (demo)'],
+   ].some(([path, text]) => normalizedFilename.endsWith(path) && value.trim() === text);
+   if (!codeOnly && !statusProvenance && !motionProvenance && !controlProvenance && !capabilityProvenance && !chartProvenance && forbidden.test(value)) findings.push(`${filename}:${source.getLineAndCharacterOfPosition(n.pos).line + 1}: ${JSON.stringify(value.trim())}`);
   }
   ts.forEachChild(n, walk);
  }

@@ -10,12 +10,12 @@ export function LogoutPage() {
   const [ended, setEnded] = useState(false);
   return <Panel className="flex min-h-[430px] flex-col items-center justify-center px-6 py-16 text-center">
     {ended ? <>
-      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-brand"><LogOut size={30} strokeWidth={1.5} /></div>
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-accent-soft text-brand dark:text-accent"><LogOut size={30} strokeWidth={1.5} /></div>
       <h1 id="session-ended" tabIndex={-1} className="text-2xl font-semibold">Anda telah keluar</h1>
       <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">Sesi telah berakhir.</p>
       <Button asChild className="mt-6"><Link to="/">Masuk kembali</Link></Button>
     </> : <>
-      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-brand"><LogOut size={30} strokeWidth={1.5} /></div>
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-accent-soft text-brand dark:text-accent"><LogOut size={30} strokeWidth={1.5} /></div>
       <h1 className="text-2xl font-semibold">Keluar</h1>
       <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">Akhiri sesi saat ini.</p>
       <button id="logout-trigger" className="mt-6 rounded-lg bg-brand px-4 py-2 text-white" onClick={() => setConfirmOpen(true)}>Keluar</button>

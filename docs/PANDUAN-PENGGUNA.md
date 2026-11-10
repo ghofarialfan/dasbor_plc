@@ -62,13 +62,13 @@ Menu berada di kiri; pada layar kecil gunakan **Buka menu**. Menu profil kanan a
 
 | Menu | Tujuan |
 | --- | --- |
-| Overview | Ringkasan unit, notifikasi site, diagram, tren, pratinjau kamera |
+| Overview | Seluruh pembacaan satu genset, alarm unit, tren utama/channel tambahan, media lokal |
 | Device | Identitas, pencarian unit, inventaris mesin dan instrumen |
 | Visualisasi | Diagram sistem lengkap dan subsistem |
 | Data | Tabel telemetry, filter, CSV |
 | Pengaturan Perangkat | Channel, target/status manual, gauge kustom, riwayat |
 | Tren & Riwayat | Arsip dan perbandingan parameter |
-| Camera View | Grid ilustrasi kamera |
+| Camera View | Gambar referensi kamera dan thermal |
 | News | Pengumuman global |
 | Support | Tiket lokal |
 | Profile | Preferensi dan reset |
@@ -78,7 +78,7 @@ Site membatasi daftar unit. Jika unit aktif tidak termasuk site baru, aplikasi m
 
 **Cakupan yang perlu dibedakan:**
 
-- Notifikasi Overview dan lonceng mencakup seluruh unit pada site, bukan hanya unit aktif.
+- Lonceng mencakup seluruh unit pada site. Alarm dan aktivitas di Overview hanya mencakup genset aktif.
 - News bersifat global. Daftar tiket dan gauge kustom mengikuti cakupan site.
 - Formulir Support mengikuti unit aktif; mengganti unit mengosongkan judul, deskripsi, dan relasi alarm draf.
 - Membuka detail kartu Device tidak otomatis memilih unit; gunakan **Gunakan unit ini**.
@@ -104,19 +104,20 @@ Label Terdokumentasi, Diklarifikasi, Asumsi, TBD/Belum ditentukan, atau Tercantu
 
 ## 4. Overview
 
-**Tujuan:** membaca ringkasan unit dan kondisi site.
+**Tujuan:** memantau seluruh pembacaan satu genset dan histori dalam dashboard padat. Layout ditargetkan tanpa scroll pada viewport 1920×1080, zoom 100%, serta ruang halaman 1920×960 dan 1920×900 setelah toolbar browser. Pada tinggi 900–999 px, jarak kartu dan tinggi grafik diringkas; thumbnail tetap 110 px. Layar lebih kecil boleh scroll.
 
-1. Pilih site dan **Pilih generator**.
-2. Periksa enam **Parameter utama**: RPM, tegangan, frekuensi, suhu motor, suhu ruang, dan suhu BLDC.
-3. Buka **Notifikasi site → Alarm aktif** atau **Aktivitas**. Klik item untuk memilih unit terkait.
-4. Periksa jumlah Total unit, Running, Standby, Tidak diketahui, dan Offline dalam site.
-5. Klik komponen pada **Generator overview** untuk membuka detail yang tersedia.
-6. Pada **Tren parameter**, pilih parameter dan rentang 1, 3, atau 6 jam; arahkan pointer ke grafik untuk membaca nilai.
-7. Periksa pratinjau kamera sebagai representasi media lokal.
+1. Pilih site di header aplikasi dan **Generator** di Overview.
+2. Periksa 45 pembacaan dalam kelompok Output & PLTS, Penggerak & alternator, Pelumasan, Ventilasi & lingkungan, serta Status & keamanan. Tag bersama ditampilkan sekali. Nilai kosong ditampilkan sebagai —, bukan nol.
+   Indikator di kartu mengikuti jenis pembacaan: tegangan/arus/daya/frekuensi memakai bar, suhu dan RPM memakai mini gauge berjarum, getaran/tekanan/beda tekanan memakai bullet bar, serta RH/posisi damper memakai progress persentase. Digital memakai lampu dan label makna sinyal, bukan persentase isi tangki. Data kosong/offline tidak menampilkan isian atau jarum nilai; angka tetap —. Rentang indikator hanya rentang tampilan, bukan batas aman mesin.
+3. Klik **Detail / Atur** untuk membaca fungsi, kualitas data, asumsi, dan pengaturan lokal. Target tidak mengubah telemetry atau mengirim perintah PLC.
+4. Klik jumlah alarm untuk membuka alarm dan 20 aktivitas terbaru genset aktif. Notifikasi seluruh site tetap tersedia pada lonceng aplikasi.
+5. Periksa enam grafik **Tren & Riwayat**, pilih periode 1 jam–90 hari, dan arahkan pointer untuk membaca nilai. Grafik channel tambahan menyediakan pilihan seluruh channel tambahan. Analog memakai line chart; digital memakai step chart 0/1 dengan label Tidak aktif/Aktif dan tooltip sesuai arti sinyal. Perubahan digital dan batas celah tetap dipertahankan saat penyederhanaan grafik; jarak horizontal mengikuti timestamp. Warna enam parameter utama konsisten dengan halaman histori lengkap.
+6. Buka histori lengkap untuk analisis lanjutan atau ekspor; gunakan **Visualisasi sistem** untuk diagram besar.
+7. Klik panel media untuk memperbesar ilustrasi lokal statis, bukan CCTV.
 
-**Hasil:** parameter/diagram mengikuti unit aktif; notifikasi tetap mengikuti site. Aktivitas menyediakan navigasi halaman.
+**Hasil:** pembacaan, grafik, alarm, aktivitas, dan media mengikuti genset aktif. Snapshot dataset dan last seen unit ditampilkan terpisah.
 
-**Batasan:** klik alarm tidak mengakui, menghapus, atau mereset alarm. Grafik adalah arsip simulasi interval 5 menit. Animasi bukan pengukuran kecepatan aktual atau bukti seluruh komponen normal.
+**Batasan:** alarm tidak diakui, dihapus, atau direset melalui Overview. Grafik adalah arsip simulasi interval 5 menit; celah tidak diisi nol. Rentang indikator bukan batas proteksi. Status digital bukan penilaian kesehatan seluruh komponen. Kualitas data dan label lengkap tersedia melalui Detail / Atur.
 
 ## 5. Device dan inventaris mesin
 
@@ -253,7 +254,7 @@ Panel **Data kapabilitas tambahan** mengikuti **unit aktif**, bukan pilihan Semu
 2. Pilih 1, 2, atau 4 kolom; jumlah kolom menyesuaikan lebar layar.
 3. Klik perbesar pada kamera, lalu tutup dialog untuk kembali.
 
-**Hasil:** CAM-01–03 memakai ilustrasi lokal saat online; CAM-04 dan unit offline tanpa media. Layout tersimpan lokal bila tersedia.
+**Hasil:** dua gambar kamera genset dan satu citra thermal referensi sama seperti Overview dan preview Pengaturan Perangkat. Gambar tetap tersedia saat unit offline, bukan live CCTV dan bukan kondisi aktual unit. Angka pada citra thermal bukan telemetry aplikasi. Layout tersimpan lokal bila tersedia. Jika gambar gagal dimuat, pesan kegagalan menggantikan gambar.
 
 **Batasan:** bukan streaming, rekaman, atau kontrol CCTV. Media statis tidak menunjukkan kondisi lokasi saat ini.
 
@@ -349,7 +350,7 @@ Pilihan site/unit, preferensi, layout kamera, widget, tiket, target/status manua
 | Digital 0/1 | False/true, bukan persen |
 | Widget hilang/tidak bisa ditambah | Periksa site; batas keseluruhan 50, bukan per unit |
 | CSV gagal/ditolak | Persempit filter; batas 250.000 baris, periksa izin unduh/memori |
-| Kamera kosong | CAM-04/offline memang tanpa media; bukan CCTV |
+| Kamera kosong | Periksa pemuatan media lokal; gambar referensi bukan CCTV dan tidak mengikuti status online unit |
 | Tiket tidak diterima petugas | Tidak dikirim server; hubungi kanal resmi |
 | Tiket gagal dibuat | Periksa kolom wajib, 120/2000 karakter, batas 200 tiket, dan storage |
 | Perubahan hilang | Periksa browser/profil/alamat yang sama, mode privat, izin/data situs |
@@ -376,6 +377,14 @@ Saat melapor, catat halaman, site, unit, tag/channel, filter/rentang, langkah re
 | CSV | Berkas tabel teks untuk spreadsheet |
 | TBD | Belum ditentukan/dikonfirmasi |
 
+### Konsistensi indikator antarhalaman
+
+Overview, Pengaturan Perangkat (termasuk widget kustom), pembacaan Device, dan dialog Visualisasi menggunakan aturan indikator yang sama: listrik berupa bar, suhu/RPM berupa gauge jarum, tekanan/getaran berupa bullet bar, RH/posisi damper berupa progress persentase, dan sinyal digital berupa lampu dengan label sesuai sinyal. Ukuran indikator mengikuti ruang halaman; susunan tiap halaman tidak disamakan dengan Overview.
+
+Data kosong atau offline tetap **—**, tanpa isian nilai atau jarum. Channel boolean tetap digital meskipun jenis instrumen belum ditentukan. Rentang indikator adalah rentang tampilan, bukan batas aman atau proteksi PLC. Peringatan suhu motor tetap **>35 °C**.
+
+Tabel Data menampilkan label digital seperti “Tidak rendah”, “Berjalan”, atau “Tertutup”; CSV tetap menyimpan boolean mentah `true`/`false`. Tren & Riwayat mempertahankan line chart analog dan step chart digital 0/1, dengan tooltip tanggal lengkap dan label sinyal. Histori arsip tidak dihapus hanya karena unit saat ini offline.
+
 ### Ekspor PDF untuk partner
 
 1. Render Markdown ini dengan editor yang mendukung ekspor PDF, atau ekspor HTML lalu cetak ke PDF melalui browser.
@@ -386,3 +395,12 @@ Saat melapor, catat halaman, site, unit, tag/channel, filter/rentang, langkah re
 Tidak ada ketergantungan gambar/tautan eksternal. Screenshot belum disertakan karena belum ada tangkapan UI terkini yang diverifikasi. Jika ditambahkan kemudian, gunakan build yang sama dan hindari data sensitif.
 
 Panduan disusun berdasarkan implementasi frontend pada tanggal dokumen, bukan hasil uji operasional mesin. Perubahan menu, dataset, kontrol, backend, atau storage memerlukan pembaruan panduan. Markdown/PDF menjadi acuan lengkap partner; bantuan singkat di aplikasi dapat ditambahkan kemudian tanpa menggandakan seluruh isi.
+
+
+## Mode terang dan night mode
+
+Gunakan toggle **Night mode** (ikon bulan/matahari) di header untuk mengganti tema seluruh halaman. Toggle tersedia pada desktop dan mobile serta dapat dioperasikan dengan keyboard. Tema awal adalah terang.
+
+Night mode memakai palet Deep Navy, Slate, dan Electric Blue. Panel, tabel, form, grafik, gauge, dialog, serta menu mengikuti tema; foto kamera, thermal, dan aset gambar mesin mempertahankan warna aslinya. Tema tidak mengubah nilai sensor, status, ambang peringatan, atau data historis.
+
+Pilihan disimpan di browser dan disinkronkan antar-tab browser. Jika penyimpanan gagal, perubahan tetap tersedia selama sesi dan aplikasi menampilkan pemberitahuan. **Kembalikan pengaturan awal** pada Profile menghapus preferensi tema dan mengembalikan mode terang.

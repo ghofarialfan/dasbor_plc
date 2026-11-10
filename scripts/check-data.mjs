@@ -25,11 +25,28 @@ function collectOverviewComponents(node) {
   ts.forEachChild(node, collectOverviewComponents);
 }
 collectOverviewComponents(overviewAst);
-for (const name of ['SiteNotifications', 'MainParameters']) assert.equal(overviewComponents.filter(tag => tag === name).length, 1, `${name} must appear once`);
-assert.ok(!overviewComponents.includes('ActiveAlerts') && !overviewComponents.includes('RecentActivity'), 'notification lists are integrated into one panel');
-assert.ok(overviewComponents.indexOf('SiteNotifications') < overviewComponents.indexOf('MainParameters'), 'mobile prioritizes notifications');
-assert.ok(overviewComponents.indexOf('MainParameters') < overviewComponents.indexOf('SystemOverview'), 'critical panels precede diagram');
-assert.ok(overviewSource.includes('xl:grid-cols-[minmax(0,3fr)_minmax(300px,1fr)]'), 'parameters get three shares while compact notifications retain a 300px minimum');
+for (const name of ['EquipmentWidget', 'DashboardHistory']) assert.equal(overviewComponents.filter(tag => tag === name).length, 1, `${name} must be integrated once`);
+assert.ok(!overviewComponents.includes('SystemOverview') && !overviewComponents.includes('GaugeCard'), 'large diagram and duplicate gauges must not consume dashboard space');
+assert.ok(overviewSource.includes('overviewEquipmentGroups(device)') && overviewSource.includes('visibleTags={tags} compact'));
+assert.ok(overviewSource.includes('alarm.deviceId === device.id') && overviewSource.includes('activity.deviceId === device.id'), 'Overview notifications belong to the active unit');
+const overviewHistorySource = await readFile(new URL('../src/components/overview/dashboard-history.tsx', import.meta.url), 'utf8');
+assert.ok(overviewHistorySource.includes('historyParameters.map(parameter => <ParameterHistory'));
+assert.ok(overviewHistorySource.includes('demoChannelReading(device, binding.tag') && overviewHistorySource.includes('connectNulls={false}'));
+assert.ok(overviewHistorySource.includes('historyDisplayIndices') && overviewHistorySource.includes('historyStats'));
+const indicatorSource = await readFile(new URL('../src/lib/channel-indicator.ts', import.meta.url), 'utf8');
+const indicatorJs = ts.transpileModule(indicatorSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+const { channelIndicatorKind, indicatorFraction } = await import(`data:text/javascript;base64,${Buffer.from(indicatorJs).toString('base64')}`);
+for (const [unit, kind] of [['°C', 'temperature'], ['rpm', 'speed'], ['%', 'percentage'], ['%RH', 'percentage'], ['bar', 'bullet'], ['Pa', 'bullet'], ['mm/s', 'bullet'], ['V', 'bar'], ['A', 'bar'], ['Hz', 'bar'], ['kW', 'bar']]) {
+  assert.equal(channelIndicatorKind(unit, false), kind);
+  assert.equal(channelIndicatorKind(unit, true), 'digital');
+}
+for (const [value, max, expected] of [[null, 100, null], [NaN, 100, null], [Infinity, 100, null], [10, undefined, null], [10, 0, null], [10, -1, null], [10, Infinity, null], [-5, 100, 0], [0, 100, 0], [25, 100, 0.25], [150, 100, 1]]) assert.equal(indicatorFraction(value, max), expected);
+console.log('PASS: semantic card indicator mapping, null/invalid ranges and bounded display fractions.');
+const overviewCss = await readFile(new URL('../src/index.css', import.meta.url), 'utf8');
+assert.ok(overviewCss.includes('(min-width: 1800px) and (min-height: 900px)'));
+assert.ok(overviewCss.includes('(max-height: 999px)'));
+assert.ok(overviewHistorySource.includes('Tren analog · line chart') && overviewHistorySource.includes('Riwayat status digital · step chart 0/1'));
+assert.ok(!overviewCss.includes('overflow: hidden'), 'dashboard must not conceal overflowing readings');
 assert.ok(alertsSource.includes('Notifikasi site') && alertsSource.includes('Site terpilih · seluruh unit'));
 assert.ok(alertsSource.includes('max-h-64 overflow-y-auto') && alertsSource.includes('tabIndex={0}'));
 assert.ok(alertsSource.includes('[...filteredActivities].sort('), 'activity ordering must not mutate context');
@@ -232,7 +249,7 @@ assert.ok(alarms.some(alarm => alarm.deviceId === devices[1].id && alarm.severit
 const sharedStatusSource = await readFile(new URL('../src/components/shared.tsx', import.meta.url), 'utf8');
 assert.ok(sharedStatusSource.includes('deviceStatus(device)') && sharedStatusSource.includes('Data demo'));
 assert.ok(devicePage.includes('deviceStatus(device).label'));
-assert.ok(overviewSource.includes('deviceStatusKey(d)'));
+assert.ok(overviewSource.includes('<StatusBadge device={device} animated />'));
 assert.ok((await readFile(new URL('../src/pages/virtual.tsx', import.meta.url), 'utf8')).includes('<StatusBadge device={device} animated />'));
 assert.ok(equipmentDetailSource.includes('Status belum tersedia') && equipmentDetailSource.includes('Posisi belum tersedia'));
 for (const removed of ['ventilationFanStatus', 'Kecepatan animasi', 'Jeda/lanjut']) assert.ok(!equipmentDetailSource.includes(removed));
@@ -490,7 +507,7 @@ assert.ok(controlContext.includes('if (!targetDevice || !ids.has(id)) return fal
 assert.ok(controlUi.includes('disabled={!device.online}'));
 assert.ok(controlUi.includes('controlCopy.apply') && controlUi.includes('setConfirming(true)'));
 assert.ok(gaugeUi.includes('<GaugeTargetControl device={device} parameter={parameter} measured={value} />'));
-assert.ok(overviewSource.includes('device={device} parameter={p}'));
+assert.ok(overviewSource.includes('equipment={item} device={device} visibleTags={tags} compact'));
 assert.ok(!overviewSource.includes('DemoControls'));
 assert.ok(settingsUi.includes('device={d} parameter={w.parameter}'));
 assert.ok(!settingsUi.includes('NUMERIC_PARAMS.map(p => <GaugeCard'), 'settings must not duplicate the equipment gauges in a standalone panel');
@@ -583,7 +600,49 @@ for (const unit of devices) {
   assert.ok(cards.some(key => key.startsWith('VT-401:')));
 }
 console.log('PASS: shared gauge dial, detail dialog, responsive channel cards and shared-channel deduplication.');
-assert.ok(equipmentUi.includes("visual.available ? 'bg-blue-500' : 'bg-slate-300'"));
+assert.ok(equipmentUi.includes('<ChannelReading reading={reading}') && equipmentUi.includes("kind === 'temperature' || kind === 'speed'"));
+for (const unit of devices) {
+  for (const instrument of instruments.filter(i => i.deviceId === unit.id)) {
+    for (const reading of readingsForInstrument(unit, instrument.tag)) {
+      const expectedDigital = instrument.valueType === 'digital' || typeof reading.value === 'boolean' || (data.demoChannels[instrument.tag] ?? []).some(c => c.id === reading.channel && typeof c.normal === 'boolean');
+      assert.equal(capabilityModel.isDigitalReading(reading, instrument.valueType), expectedDigital);
+      if (expectedDigital) assert.equal(capabilityModel.isDigitalReading({ ...reading, value: null, quality: 'offline' }, instrument.valueType), true);
+    }
+  }
+}
+console.log('PASS: shared cross-tab indicator classification including unresolved offline boolean channels.');
+const dashboardModel = await moduleFrom('../src/lib/equipment-dashboard.ts');
+const { dashboardTagGroups, equipmentDashboardGroup } = dashboardModel;
+assert.equal(equipmentDashboardGroup('PM-01'), 'electrical');
+assert.equal(equipmentDashboardGroup('LSL-19'), 'oil');
+assert.equal(equipmentDashboardGroup('DMP-301'), 'air');
+assert.equal(equipmentDashboardGroup('unmapped-tag'), 'status');
+assert.deepEqual(dashboardTagGroups([]), []);
+const dashboardJs = ts.transpileModule(await readFile(new URL('../src/lib/equipment-dashboard.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText;
+const overviewModel = await moduleFrom('../src/lib/overview-dashboard.ts', {
+  "'@/data/demo'": JSON.stringify(dataUrl),
+  "'@/lib/equipment-dashboard'": JSON.stringify(`data:text/javascript;base64,${Buffer.from(dashboardJs).toString('base64')}`),
+});
+for (const unit of devices) {
+  const groups = overviewModel.overviewEquipmentGroups(unit);
+  const tags = groups.flatMap(group => group.cards.flatMap(card => card.tags));
+  const expected = data.instruments.filter(instrument => instrument.deviceId === unit.id).map(instrument => instrument.tag);
+  assert.deepEqual([...tags].sort(), [...expected].sort(), 'Overview retains each registry tag exactly once');
+  assert.equal(tags.length, new Set(tags).size);
+  assert.equal(groups.reduce((sum, group) => sum + group.count, 0), 45);
+  assert.ok(groups.every(group => group.cards.every(card => card.item.deviceId === unit.id)));
+}
+console.log('PASS: Overview selector covers all 45 readings per unit, deduplicates shared tags and isolates equipment instances.');
+for (const unit of devices) {
+  const tags = [...new Set(data.instruments.filter(i => i.deviceId === unit.id).map(i => i.tag))];
+  const groupedTags = dashboardTagGroups(tags).flatMap(group => group.tags);
+  assert.deepEqual([...groupedTags].sort(), [...tags].sort(), 'dashboard must retain every tag exactly once');
+  assert.equal(groupedTags.length, new Set(groupedTags).size);
+}
+assert.ok(settingsUi.includes('<TrendChart key={device.id}') && settingsUi.includes('<CameraPreview'));
+assert.ok(settingsUi.includes('visibleTags.filter(tag => group.tags.includes(tag))'));
+assert.ok(equipmentUi.includes('Detail / Atur') && equipmentUi.includes('max-w-[170px]'));
+console.log('PASS: grouped equipment dashboard covers all unit tags once, retains unknown tags, compact gauges, digital states, trend and media.');
 for (const unit of devices) {
   const coveredTags = new Set();
   for (const item of equipmentDefinitions) {
@@ -609,9 +668,26 @@ for (const unit of devices) {
   assert.equal(equipmentCapabilities(unit, 'gearbox5')[0].instrument.tag, 'VT-401');
   assert.ok(equipmentCapabilities(unit, 'motor6')[0].instrument.tag.startsWith('DEMO:'));
 }
-for (const [value, expected] of [[true, 'Aktif'], [false, 'Tidak aktif']]) {
+for (const [value, expected] of [[true, 'Level rendah'], [false, 'Tidak rendah']]) {
   assert.equal(capabilityStatus({ deviceId: devices[0].id, tag: 'LSL-19', value, quality: 'simulated' }), expected);
 }
+const transitionRows = [0, 0, 1, 0, 0, null, null, 1, 1].map((value, index) => ({ time: String(index), value }));
+assert.deepEqual(history.digitalHistoryIndices(transitionRows), [0, 1, 2, 3, 4, 5, 6, 7, 8]);
+assert.deepEqual(history.digitalHistoryIndices([]), []);
+assert.deepEqual(history.digitalHistoryIndices(Array.from({ length: 1000 }, (_, i) => ({ time: String(i), value: 0 }))), [0, 999]);
+for (const [channel, active, inactive, attention] of [
+  ['running', 'Berjalan', 'Berhenti', false], ['closed', 'Tertutup', 'Terbuka', false],
+  ['trip', 'Trip aktif', 'Trip tidak aktif', true], ['pressed', 'Ditekan', 'Tidak ditekan', true],
+]) {
+  assert.equal(capabilityModel.digitalStatus('TEST', channel, true), active);
+  assert.equal(capabilityModel.digitalStatus('TEST', channel, false), inactive);
+  const reading = { tag: 'TEST', channel, value: true, quality: 'simulated' };
+  assert.equal(capabilityModel.digitalAttention(reading), attention);
+  assert.equal(capabilityModel.digitalAttention({ ...reading, quality: 'offline' }), false);
+}
+assert.ok(overviewHistorySource.includes('digitalHistoryIndices(rows)'));
+assert.ok(overviewHistorySource.includes('color={historyColors[parameter]}'));
+console.log('PASS: semantic digital labels, attention signals, transition/gap preservation and consistent analog colors.');
 assert.ok(equipmentUi.includes('capabilities.length === 0') && equipmentUi.includes('Kondisi / kemampuan perangkat'));
 assert.ok(equipmentUi.includes("instrument.valueType === 'analog'") && equipmentUi.includes('Indikator digital'));
 assert.ok(equipmentUi.includes('reading.assumption'));
@@ -737,14 +813,19 @@ assert.equal(applyTarget(emptyTargets(), 'GEN-020', true, 'rpm', 520, now), null
 assert.equal(applyEquipmentScenario(emptyEquipmentSettings(), 'GEN-020', true, 'breaker', 'Terbuka', now), null);
 assert.equal(applyTarget(emptyTargets(), 'GEN-021', true, 'rpm', 520, now), null);
 const cameraSource = await readFile(new URL('../src/pages/camera-view.tsx', import.meta.url), 'utf8');
-const cameraSceneSource = await readFile(new URL('../src/components/camera-scene.tsx', import.meta.url), 'utf8');
+const cameraMediaSource = await readFile(new URL('../src/components/overview/dashboard-media.tsx', import.meta.url), 'utf8');
 const cameraPreviewSource = await readFile(new URL('../src/components/overview/camera-preview.tsx', import.meta.url), 'utf8');
-assert.ok(cameraSceneSource.includes('onError=') && cameraSceneSource.includes('import.meta.env.BASE_URL'));
+assert.ok(cameraMediaSource.includes('onError=') && cameraMediaSource.includes('import.meta.env.BASE_URL'));
 for (const source of [cameraSource, cameraPreviewSource]) {
-  assert.ok(source.includes("@/components/camera-scene"));
-  assert.ok(source.includes('cameraAvailable(device.online,'));
+  assert.ok(source.includes('ReferenceMediaGallery'));
+  assert.ok(!source.includes('cameraAvailable'));
 }
-assert.ok(cameraSceneSource.includes("cameraId !== 'CAM-04'"));
+for (const file of ['genset-camera-01.png', 'genset-camera-02.png', 'genset-thermal.jpg']) {
+  assert.ok(cameraMediaSource.includes(file));
+  assert.ok((await readFile(new URL(`../public/media/${file}`, import.meta.url))).length > 0);
+}
+assert.ok(cameraMediaSource.includes('bukan live') && cameraMediaSource.includes('bukan telemetry aplikasi'));
+assert.ok(cameraSource.includes('columns={cols === 1 ? 1 : cols === 2 ? 2 : 4}'));
 
 // Exercise persistence hook transitions with a small deterministic React-hook harness.
 const storageModuleUrl = `data:text/javascript;base64,${Buffer.from(ts.transpileModule(await readFile(new URL('../src/lib/storage.ts', import.meta.url), 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } }).outputText).toString('base64')}`;
@@ -814,7 +895,7 @@ assert.equal(validators.isTicketArray([data.seedTickets[0], data.seedTickets[0]]
 assert.equal(validators.isWidgetArray(Array.from({ length: 51 }, (_, i) => ({ ...data.seedWidgets[0], id: `limit-${i}` }))), false);
 const syncContext = await readFile(new URL('../src/context/demo-context.tsx', import.meta.url), 'utf8');
 for (const key of ['site', 'selected-unit', 'tickets', 'gauge-widgets', 'camera-layout', 'gauge-targets', 'equipment-scenarios']) assert.ok(syncContext.includes(`usePersistedState('${key}'`));
-assert.ok(overviewSource.includes('deviceStatusDefinitions.unknown.label'));
+assert.ok(overviewSource.includes('Last seen: {dateTime(device.lastSeen)}'));
 assert.ok(alertsSource.includes('recentActivities.slice(') && alertsSource.includes('dateTime(a.timestamp)'));
 const supportSource = await readFile(new URL('../src/pages/support.tsx', import.meta.url), 'utf8');
 assert.ok(supportSource.includes('tickets.length >= 200') && !supportSource.includes('next.slice(0, 200)'));
@@ -830,7 +911,9 @@ assert.ok(deviceDetailSource.includes('Gunakan unit ini') && deviceDetailSource.
 assert.ok(deviceDetailSource.includes("['Ringkasan', 'Perangkat', 'Instrumen']"));
 assert.ok(machineGallerySource.includes('visibleMachines') && machineGallerySource.includes('Reset filter'));
 assert.ok(sharedReadingSource.includes('i.deviceId === device.id && i.tag === tag'));
-assert.ok(sharedReadingSource.includes('r.value === null') && sharedReadingSource.includes("typeof r.value === 'boolean'"));
+const channelReadingSource = await readFile(new URL('../src/components/channel-reading.tsx', import.meta.url), 'utf8');
+assert.ok(sharedReadingSource.includes('<ChannelReading reading={r}'));
+assert.ok(channelReadingSource.includes('capabilityVisual(reading).available') && channelReadingSource.includes('isDigitalReading(reading, valueType)') && channelReadingSource.includes("typeof reading.value === 'boolean'"));
 assert.ok(sharedReadingSource.includes('parameter: r.parameter') && sharedReadingSource.includes('unit: device!.id'));
 console.log('PASS: Device inspection does not select units; explicit selection, detail sections, catalog filters, scoped registry readings and contextual history links.');
 
@@ -912,3 +995,17 @@ mockStorage.setFailure(false);
 commitCounter(previous => previous + 1);
 assert.deepEqual(mockStorage.writes, [1, 2, 3, 4]);
 console.log('PASS: consecutive functional persistence commits, invalid-value rejection and session fallback after storage failure.');
+
+
+// Global theme validation remains independent of telemetry and profile preferences.
+const themeSource = await readFile(new URL('../src/lib/theme.ts', import.meta.url), 'utf8');
+const themeModule = await import(`data:text/javascript;base64,${Buffer.from(ts.transpileModule(themeSource, { compilerOptions: { module: ts.ModuleKind.ESNext } }).outputText).toString('base64')}`);
+assert.equal(themeModule.defaultTheme, 'light');
+for (const value of ['light', 'dark']) assert.ok(themeModule.isTheme(value));
+for (const value of [null, undefined, '', 'system', 'DARK', {}, 0, true]) assert.equal(themeModule.isTheme(value), false);
+const bootstrapSource = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+assert.ok(bootstrapSource.includes('genset-demo:v1:theme') && bootstrapSource.includes("theme === 'dark'"));
+const themeToggleSource = await readFile(new URL('../src/components/theme-toggle.tsx', import.meta.url), 'utf8');
+assert.ok(themeToggleSource.includes('role="switch"') && themeToggleSource.includes('aria-checked='));
+assert.ok(themeToggleSource.includes("usePersistedState('theme', defaultTheme, isTheme)"));
+console.log('PASS: strict global light/dark theme validation, accessible persisted toggle and first-paint bootstrap.');

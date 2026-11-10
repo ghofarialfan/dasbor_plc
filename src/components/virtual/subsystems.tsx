@@ -16,7 +16,7 @@ export function DriverOutput(views: EquipmentViewProps) {
         const item = belt.to.item;
         const branch = pmgConnections.find(connection => connection.style === 'cable' && 'item' in connection.from && connection.from.item === item);
         const output = pmgConnections.find(connection => connection.id === 'cable-output-17');
-        return <div key={belt.id} className="flex items-stretch"><span className="flex w-36 shrink-0 items-center rounded-xl border border-dashed border-slate-300 p-3 text-xs text-muted">Sumber belt belum dikonfirmasi</span><Connection connection={belt} /><ItemCard item={item} {...views} />{branch && <Connection connection={branch} />}<span className="flex w-24 shrink-0 items-center justify-center text-center text-[11px] text-muted">Simpul kabel bersama</span>{output && <Connection connection={output} />}<ItemCard item={17} {...views} /></div>;
+        return <div key={belt.id} className="flex items-stretch"><span className="flex w-36 shrink-0 items-center rounded-xl border border-dashed border-slate-300 dark:border-border p-3 text-xs text-muted">Sumber belt belum dikonfirmasi</span><Connection connection={belt} /><ItemCard item={item} {...views} />{branch && <Connection connection={branch} />}<span className="flex w-24 shrink-0 items-center justify-center text-center text-[11px] text-muted">Simpul kabel bersama</span>{output && <Connection connection={output} />}<ItemCard item={17} {...views} /></div>;
       })}</div></ScrollDiagram>
       <p className="text-[11px] leading-relaxed text-muted">Kedua baris bergabung pada simpul kabel dan Output 17 yang sama; pengulangan output hanya referensi. Sumber dan rute belt belum dikonfirmasi, bukan koneksi dari gearbox 9.</p>
     </Section>
@@ -46,7 +46,7 @@ export function OilLube(views: EquipmentViewProps) {
 
 export function Ventilation(views: EquipmentViewProps) {
   return <div className="space-y-4">
-    <p className="rounded-lg border border-border bg-slate-50 px-3 py-2 text-xs font-medium text-muted">Skematik sistem · bukan kondisi aktual perangkat</p>
+    <p className="rounded-lg border border-border bg-slate-50 dark:bg-surface-soft px-3 py-2 text-xs font-medium text-muted">Skematik sistem · bukan kondisi aktual perangkat</p>
     <p className="text-xs leading-relaxed text-muted">Urutan fungsional dari draf, bukan bukti aliran udara aktual. Ilustrasi statis tidak menunjukkan perangkat berjalan maupun berhenti. Geser diagram bila diperlukan.</p>
     <Section title="Ventilasi ruang unit">
       <ScrollDiagram label="Diagram fungsional ventilasi, dapat digeser">
@@ -57,12 +57,12 @@ export function Ventilation(views: EquipmentViewProps) {
           <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
           <div className="space-y-2">
             <DetailCard {...views} id="ventilation" label="Kipas ventilasi" sub="M-301" />
-            <p className="max-w-36 rounded-md bg-slate-100 px-2 py-1 text-[11px] text-muted">Status belum tersedia</p>
+            <p className="max-w-36 rounded-md bg-slate-100 dark:bg-surface-hover px-2 py-1 text-[11px] text-muted">Status belum tersedia</p>
           </div>
           <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
           <div className="space-y-2">
             <DetailCard {...views} id="ventilation" label="Damper" sub="DMP-301" />
-            <p className="max-w-36 rounded-md bg-slate-100 px-2 py-1 text-[11px] text-muted">Posisi belum tersedia</p>
+            <p className="max-w-36 rounded-md bg-slate-100 dark:bg-surface-hover px-2 py-1 text-[11px] text-muted">Posisi belum tersedia</p>
           </div>
           <span aria-hidden="true" className="w-8 shrink-0 self-center border-t border-dashed border-slate-400" />
           <DetailCard {...views} id="ventilation" label="Ruang unit" sub="TT-303 · AT-301" />
@@ -88,7 +88,7 @@ export function Security(views: EquipmentViewProps) {
   return <div className="space-y-4">
     <p className="text-xs leading-relaxed text-muted">Perangkat dikelompokkan menurut fungsi, bukan urutan aliran atau rangkaian keselamatan terverifikasi. Tidak adanya alarm bukan konfirmasi kondisi aman.</p>
     <div className="grid gap-4 sm:grid-cols-2">{groups.map(group => <Section key={group.title} title={group.title}><EquipmentCards {...views} ids={group.ids} /><p className="text-xs text-muted">Status perangkat: {device.online ? 'Belum ada data' : 'Offline · Belum ada data terkini'}.</p></Section>)}</div>
-    <p className="rounded-xl border border-border bg-slate-50 p-3 text-xs leading-relaxed text-muted">ES-01 hardwired, di luar logika PLC. Mode baca saja: tidak ada reset, bypass, atau kontrol jarak jauh. PRT-01/CB-01 adalah referensi proteksi, bukan tambahan koneksi pada denah.</p>
+    <p className="rounded-xl border border-border bg-slate-50 dark:bg-surface-soft p-3 text-xs leading-relaxed text-muted">ES-01 hardwired, di luar logika PLC. Mode baca saja: tidak ada reset, bypass, atau kontrol jarak jauh. PRT-01/CB-01 adalah referensi proteksi, bukan tambahan koneksi pada denah.</p>
     <InstrumentReferences ids={groups.flatMap(group => group.ids)} />
   </div>;
 }

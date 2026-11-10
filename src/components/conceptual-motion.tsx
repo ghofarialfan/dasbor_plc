@@ -17,7 +17,7 @@ export function ConceptualMotion({ children }: { children: ReactNode }) {
 
 export function ConceptRotor({ x = 0, y = 0, size = 24 }: { x?: number; y?: number; size?: number }) {
   const enabled = useContext(MotionContext);
-  return <svg x={x} y={y} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" className="shrink-0 text-blue-700" pointerEvents="none">
+  return <svg x={x} y={y} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" className="shrink-0 text-blue-700 dark:text-accent" pointerEvents="none">
     <circle cx="12" cy="12" r="11" fill="#eff6ff" stroke="currentColor" />
     <g className={enabled ? 'concept-rotor concept-rotor-running' : 'concept-rotor'} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 4v16M4 12h16M6.5 6.5l11 11M6.5 17.5l11-11" /><circle cx="12" cy="12" r="3" fill="#eff6ff" /></g>
   </svg>;

@@ -15,6 +15,7 @@ export function HistoryChart({ deviceId, selected, series }: { deviceId: string;
   const hasData = selected.some(p => historyStats(series[p] ?? []).count > 0);
   const label = selected.length === 1 ? parameters[selected[0]].label : 'Perbandingan parameter';
   return <Panel className="min-w-0"><PanelHeading title={label} eyebrow={deviceId} />
+    <p className="px-5 pb-2 text-xs font-medium text-blue-700 dark:text-accent" role="status">Tren analog · line chart</p>
     <div className="px-5 pb-3 text-xs text-muted">{selected.map(p => {
       const stats = historyStats(raw.slice(indices[viewport.startIndex] ?? 0, (indices[viewport.endIndex] ?? raw.length - 1) + 1).map(row => ({ time: row.time, value: row[p] ?? null })));
       return <p key={p} className="mb-1">{parameters[p].label} · Min {number(stats.min)} · Maks {number(stats.max)} · Rata-rata {number(stats.average)} {parameters[p].unit} · {stats.count} sampel valid</p>;
@@ -28,6 +29,6 @@ export function HistoryChart({ deviceId, selected, series }: { deviceId: string;
       {selected.map(p => <Line key={p} type="linear" dataKey={p} name={p} yAxisId={p} stroke={historyColors[p]} strokeWidth={2} dot={false} connectNulls={false} isAnimationActive={false} />)}
       <Brush dataKey="time" height={24} tickFormatter={v => time(String(v))} startIndex={viewport.startIndex} endIndex={viewport.endIndex} onChange={v => { if (v.startIndex !== undefined && v.endIndex !== undefined) setViewport({ startIndex: v.startIndex, endIndex: v.endIndex }); }} />
     </LineChart></ResponsiveContainer>}</div>
-    <p className="border-t border-slate-100 px-5 py-3 text-[10px] text-muted">Geser pembatas di bawah grafik untuk zoom; statistik mengikuti area terpilih. Data kosong tetap menjadi celah. Tidak mencakup target atau skenario manual.</p>
+    <p className="border-t border-slate-100 dark:border-border px-5 py-3 text-[10px] text-muted">Geser pembatas di bawah grafik untuk zoom; statistik mengikuti area terpilih. Data kosong tetap menjadi celah. Tidak mencakup target atau skenario manual.</p>
   </Panel>;
 }

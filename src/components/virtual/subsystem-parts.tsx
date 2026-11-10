@@ -24,7 +24,7 @@ export function PathLegend({ styles }: { styles: OverviewConnection['style'][] }
 }
 
 export function Section({ title, children }: { title: string; children: ReactNode }) {
-  return <section className="min-w-0 space-y-3 rounded-xl border border-border bg-slate-50/50 p-4"><h3 className="text-sm font-semibold">{title}</h3>{children}</section>;
+  return <section className="min-w-0 space-y-3 rounded-xl border border-border bg-slate-50/50 dark:bg-surface-soft/50 p-4"><h3 className="text-sm font-semibold">{title}</h3>{children}</section>;
 }
 
 export function ScrollDiagram({ label, children }: { label: string; children: ReactNode }) {
@@ -37,7 +37,7 @@ export function ItemCard({ item, ...views }: EquipmentViewProps & { item: number
 }
 
 export function DetailCard({ id, label, sub, selectedId, onSelect }: EquipmentViewProps & { id: string; label: string; sub: string }) {
-  return <DialogTrigger asChild><button type="button" onClick={event => { event.currentTarget.focus(); onSelect(id); }} aria-label={`${label}, ${sub}. Buka detail`} className={`flex min-h-[88px] w-36 shrink-0 flex-col justify-center gap-2 rounded-xl border bg-white p-3 text-left text-xs transition hover:border-blue-300 hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${selectedId === id ? 'border-blue-500 ring-1 ring-blue-500' : 'border-border'}`}><span className="text-[10px] text-muted">{sub}</span><span className="font-semibold">{label}</span>{rotatingConceptEquipment.includes(id) && label !== 'Damper' && label !== 'Ruang unit' && <ConceptRotor />}</button></DialogTrigger>;
+  return <DialogTrigger asChild><button type="button" onClick={event => { event.currentTarget.focus(); onSelect(id); }} aria-label={`${label}, ${sub}. Buka detail`} className={`flex min-h-[88px] w-36 shrink-0 flex-col justify-center gap-2 rounded-xl border bg-white dark:bg-surface p-3 text-left text-xs transition hover:border-blue-300 dark:hover:border-accent/40 hover:bg-blue-50 dark:hover:bg-accent-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${selectedId === id ? 'border-blue-500 ring-1 ring-blue-500' : 'border-border'}`}><span className="text-[10px] text-muted">{sub}</span><span className="font-semibold">{label}</span>{rotatingConceptEquipment.includes(id) && label !== 'Damper' && label !== 'Ruang unit' && <ConceptRotor />}</button></DialogTrigger>;
 }
 
 export function EquipmentCards({ ids, ...views }: EquipmentViewProps & { ids: string[] }) {
@@ -55,5 +55,5 @@ export function Connection({ connection }: { connection: OverviewConnection }) {
 export function InstrumentReferences({ ids }: { ids: string[] }) {
   const { device } = useDemo();
   const entries = instruments.filter(instrument => instrument.deviceId === device.id && ids.includes(instrument.equipmentId));
-  return <div className="space-y-2 border-t border-border pt-3"><h4 className="text-xs font-semibold">Instrumen terkait</h4><p className="text-[11px] leading-relaxed text-muted">Tag dan fungsi referensi; pembacaan serta kualitas data tersedia melalui detail komponen bila dipetakan.</p><ul className="grid gap-2 text-xs sm:grid-cols-2">{entries.map(instrument => <li key={instrument.instanceId} className="rounded-lg border border-border bg-white px-3 py-2"><span className="font-semibold">{instrument.tag}</span><span className="text-muted"> · {instrument.name}</span></li>)}</ul>{!entries.length && <p className="text-xs text-muted">Belum ada instrumen dipetakan.</p>}</div>;
+  return <div className="space-y-2 border-t border-border pt-3"><h4 className="text-xs font-semibold">Instrumen terkait</h4><p className="text-[11px] leading-relaxed text-muted">Tag dan fungsi referensi; pembacaan serta kualitas data tersedia melalui detail komponen bila dipetakan.</p><ul className="grid gap-2 text-xs sm:grid-cols-2">{entries.map(instrument => <li key={instrument.instanceId} className="rounded-lg border border-border bg-white dark:bg-surface px-3 py-2"><span className="font-semibold">{instrument.tag}</span><span className="text-muted"> · {instrument.name}</span></li>)}</ul>{!entries.length && <p className="text-xs text-muted">Belum ada instrumen dipetakan.</p>}</div>;
 }

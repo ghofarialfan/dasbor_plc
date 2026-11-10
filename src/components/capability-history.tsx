@@ -4,6 +4,8 @@ import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'rec
 import { ago, demoChannels, demoChannelReading, DEMO_NOW, qualityLabels } from '@/data/demo';
 import { useDemo } from '@/context/demo-context';
 import { toCsv, downloadCsv } from '@/lib/csv';
+import { digitalHistoryIndices } from '@/data/history';
+import { digitalStatus } from '@/lib/equipment-capabilities';
 import { dateTime } from '@/lib/utils';
 import { Panel } from '@/components/shared';
 
@@ -28,18 +30,21 @@ export function CapabilityHistory({ chart = false }: { chart?: boolean }) {
       setError('');
     } catch { setError('Ekspor gagal. Coba kembali atau kurangi rentang.'); }
   };
-  const chartRows = rows.map(r => ({ time: r.timestamp, value: typeof r.value === 'boolean' ? Number(r.value) : r.value }));
+  const digital = typeof binding.channel.normal === 'boolean';
+  const chartRows = rows.map(r => ({ time: r.timestamp!, value: typeof r.value === 'boolean' ? Number(r.value) : r.value }));
+  const displayRows = digital ? digitalHistoryIndices(chartRows).map(index => chartRows[index]) : chartRows;
   return <Panel className="space-y-3 p-5 text-xs">
     <h2 className="text-sm font-semibold">{chart ? 'Grafik kapabilitas tambahan' : 'Data kapabilitas tambahan'} · {device.id}</h2>
-    <p className="text-muted">Simulasi eksplisit, bukan feedback aktual. Rentang/satuan tambahan adalah asumsi. Digital: 1 = aktif/true, 0 = tidak aktif/false. Timestamp terakhir {dateTime(DEMO_NOW)}. Target dan skenario manual tidak termasuk.</p>
+    <p className="text-muted">Simulasi eksplisit, bukan feedback aktual. Rentang/satuan tambahan adalah asumsi. Digital: 1 = aktif/true, 0 = tidak aktif/false. Timestamp terakhir {dateTime(DEMO_NOW)}. Interval simulasi 5 menit dapat melewatkan trip singkat. Target dan skenario manual tidak termasuk.</p>
     <div className="flex flex-wrap gap-2">
       <select aria-label="Channel kapabilitas" value={selected} onChange={e => { setSelected(e.target.value); setPage(1); }} className="max-w-full rounded border border-border p-2">{channels.map(c => <option key={c.id} value={c.id}>{c.tag} · {c.channel.label}</option>)}</select>
       <select aria-label="Rentang kapabilitas" value={hours} onChange={e => { setHours(Number(e.target.value)); setPage(1); }} className="rounded border border-border p-2">{[1, 6, 24, 168, 2160].map(h => <option key={h} value={h}>{h === 2160 ? '90 hari' : `${h} jam`}</option>)}</select>
       <button type="button" onClick={exportCsv} className="rounded border border-border px-3 py-2">Ekspor CSV kapabilitas</button>
     </div>
     {error && <p role="alert">{error}</p>}
-    {chart ? <div className="h-72"><ResponsiveContainer width="100%" height="100%"><LineChart data={chartRows}><XAxis dataKey="time" hide /><YAxis /><Tooltip labelFormatter={value => dateTime(String(value))} /><Line dataKey="value" type={typeof binding.channel.normal === 'boolean' ? 'stepAfter' : 'linear'} dot={false} connectNulls={false} isAnimationActive={false} stroke="#2563eb" /></LineChart></ResponsiveContainer></div> : <>
-      <div className="overflow-x-auto"><table className="w-full text-left"><thead><tr><th>Waktu</th><th>Channel</th><th>Nilai</th><th>Kualitas</th></tr></thead><tbody>{visible.map(r => <tr key={r.timestamp} className="border-t border-border"><td className="py-2">{dateTime(r.timestamp!)}</td><td>{r.tag} · {r.label}</td><td>{r.value === null ? '—' : String(r.value)} {r.unit}</td><td>{qualityLabels[r.quality]}</td></tr>)}</tbody></table></div>
+    {chart && <p className="font-medium text-blue-700 dark:text-accent" role="status">{digital ? 'Riwayat status digital · step chart 0/1' : 'Tren analog · line chart'}</p>}
+    {chart ? !chartRows.some(row => row.value !== null) ? <p role="status">Belum ada sampel historis</p> : <div className="h-72"><ResponsiveContainer width="100%" height="100%"><LineChart data={displayRows}><XAxis type="number" scale="time" domain={['dataMin', 'dataMax']} dataKey={row => Date.parse(row.time)} tickFormatter={value => dateTime(new Date(Number(value)).toISOString())} minTickGap={45} tick={{ fontSize: 10 }} /><YAxis width={digital ? 105 : 55} domain={digital ? [0, 1] : ['auto', 'auto']} ticks={digital ? [0, 1] : undefined} tick={{ fontSize: 10 }} tickFormatter={value => digital ? digitalStatus(binding.tag, binding.channel.id, Number(value) === 1) : String(value)} /><Tooltip labelFormatter={value => dateTime(new Date(Number(value)).toISOString())} formatter={value => [digital ? digitalStatus(binding.tag, binding.channel.id, Number(value) === 1) : `${value} ${binding.channel.unit ?? ''}`, binding.channel.label]} /><Line dataKey="value" type={digital ? 'stepAfter' : 'linear'} dot={false} connectNulls={false} isAnimationActive={false} stroke="#2563eb" /></LineChart></ResponsiveContainer></div> : <>
+      <div className="overflow-x-auto"><table className="w-full text-left"><thead><tr><th>Waktu</th><th>Channel</th><th>Nilai</th><th>Kualitas</th></tr></thead><tbody>{visible.map(r => <tr key={r.timestamp} className="border-t border-border"><td className="py-2">{dateTime(r.timestamp!)}</td><td>{r.tag} · {r.label}</td><td>{r.value === null ? '—' : typeof r.value === 'boolean' ? digitalStatus(r.tag, r.channel, r.value) : String(r.value)} {r.value !== null ? r.unit : ''}</td><td>{qualityLabels[r.quality]}</td></tr>)}</tbody></table></div>
       <div className="flex items-center gap-3"><button type="button" disabled={safePage <= 1} onClick={() => setPage(safePage - 1)}>Sebelumnya</button><span>{safePage}/{pages} · {rows.length} sampel</span><button type="button" disabled={safePage >= pages} onClick={() => setPage(safePage + 1)}>Berikutnya</button></div>
     </>}
   </Panel>;
