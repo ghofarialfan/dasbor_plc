@@ -130,6 +130,120 @@
   .overview-history > :last-child { margin-top: 4px; }
 }
 
+/* Fleet Overview: output above, equipment/environment/oil/media below. */
+.fleet-top, .fleet-bottom, .internal-environment { display: grid; gap: 8px; min-width: 0; align-items: start; }
+.industrial-panel { min-width: 0; border: 1px solid rgb(var(--color-border)); border-radius: 8px; background: rgb(var(--color-surface)); }
+.industrial-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px; padding: 8px 10px; border-bottom: 1px solid rgb(var(--color-border)); background: rgb(var(--color-surface-soft)); }
+.industrial-heading h2 { font-size: 10px; font-weight: 700; letter-spacing: .09em; }
+.industrial-heading > span { font-size: 9px; color: rgb(var(--color-muted)); }
+.fleet-output-grid { display: grid; overflow-x: auto; }
+.output-unit { min-width: 0; text-align: center; padding: 10px 7px 4px; border-right: 1px solid rgb(var(--color-border)); }
+.output-unit:last-child { border-right: 0; }
+.output-selected { background: rgb(var(--color-accent-soft) / .45); }
+.output-bars { height: 52px; margin: 8px 0; }
+.output-unit > svg { max-width: 120px; }
+.output-total { min-height: 110px; display: flex; flex-direction: column; justify-content: center; color: rgb(var(--color-accent)); }
+.output-total strong { font-size: 30px; font-variant-numeric: tabular-nums; }
+.output-total span { font-size: 11px; }
+.comparison-section { padding: 4px 8px 0; }
+.comparison-section h3 { font-size: 10px; font-weight: 600; }
+.comparison-section h3 span { color: rgb(var(--color-muted)); }
+.comparison-chart { height: 58px; font-size: 10px; }
+.machine-unit-row { padding: 8px; border-bottom: 1px solid rgb(var(--color-border)); }
+.machine-unit-selected { border-left: 2px solid rgb(var(--color-accent)); }
+.machine-icon-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.machine-icon-button { display: flex; min-width: 0; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 2px; border: 1px solid transparent; border-radius: 5px; background: rgb(var(--color-surface-soft)); }
+.machine-icon-button:hover { border-color: rgb(var(--color-accent)); background: rgb(var(--color-accent-soft)); }
+.machine-icon-button span { line-height: 12px; font-size: 9px; font-weight: 600; overflow-wrap: anywhere; }
+.machine-icon-button small { line-height: 10px; font-size: 8px; color: rgb(var(--color-muted)); }
+.machine-icon-asset { width: 42px; height: 32px; object-fit: contain; }
+.internal-power-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3px; padding: 8px; }
+.internal-gauge { text-align: center; background: rgb(var(--color-surface-soft)); border-radius: 5px; padding: 5px; }
+.internal-gauge h3 { font-size: 9px; font-weight: 600; }
+.internal-gauge svg { margin-top: 0; }
+.panel-disclosure { padding: 6px 8px; font-size: 9px; line-height: 1.4; color: rgb(var(--color-muted)); }
+.room-panel { padding-bottom: 8px; }
+.room-weather-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: center; flex: 1; }
+.room-weather-grid .room-reading { min-width: 0; flex-direction: column; padding: 4px 6px; }
+.room-weather-grid .room-reading svg { width: 90px; }
+.room-weather-grid .room-reading p { font-size: 26px; }
+.site-weather { min-width: 0; padding: 6px 8px; border-left: 1px solid rgb(var(--color-border)); }
+.site-weather h3, .site-weather p { font-size: 10px; line-height: 1.4; }
+.site-weather h3 { font-weight: 600; }
+.site-weather small { display: block; margin-top: 4px; font-size: 9px; line-height: 1.3; color: rgb(var(--color-muted)); }
+.weather-summary { display: flex; align-items: center; gap: 6px; margin: 4px 0; color: rgb(var(--color-accent)); }
+.weather-summary svg { width: 24px; height: 24px; flex-shrink: 0; }
+.weather-summary strong { font-size: 22px; font-variant-numeric: tabular-nums; }
+.room-panel > :last-child { margin: 0 8px; }
+.room-reading { display: flex; align-items: center; justify-content: space-around; padding: 6px 10px; }
+.room-reading p { font-size: 30px; font-weight: 600; color: rgb(var(--color-accent)); }
+.room-reading small { font-size: 12px; }
+.room-reading svg { width: 110px; margin: 0; }
+.oil-tank { padding: 8px; border-bottom: 1px solid rgb(var(--color-border)); }
+.oil-support { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.oil-support svg { max-width: 85px; margin-top: 0; }
+.oil-support p { text-align: center; color: rgb(var(--color-muted)); font-size: 8px; }
+.oil-level { position: relative; display: flex; width: 94px; height: 94px; margin: 8px auto 0; overflow: hidden; flex-direction: column; align-items: center; justify-content: center; border: 5px solid rgb(var(--color-border)); border-radius: 50%; background: rgb(var(--color-surface-soft)); }
+.oil-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(180deg, #fb923c, #b45309); border-top: 2px solid #fed7aa; }
+.oil-level strong, .oil-level small { position: relative; z-index: 1; color: rgb(var(--color-foreground)); text-shadow: 0 1px 3px rgb(var(--color-surface)); }
+.oil-level strong { font-size: 24px; }
+.oil-level small { font-size: 9px; }
+.overview-camera-column > section { border: 0; border-radius: 0; }
+.overview-dashboard svg text { fill: rgb(var(--color-foreground)); }
+@media (min-width: 768px) {
+  .fleet-bottom { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .machine-icon-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (min-width: 1280px) {
+  .fleet-top { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+  .fleet-bottom { grid-template-columns: minmax(0, 42fr) minmax(0, 25fr) minmax(155px, 14fr) minmax(180px, 19fr); align-items: stretch; }
+  .internal-environment { align-content: stretch; grid-template-rows: auto 1fr; }
+  .overview-camera-column { display: flex; flex-direction: column; }
+  .overview-camera-column > section { display: flex; flex: 1; min-height: 0; flex-direction: column; }
+  .overview-camera-column > section > div { flex: 1; grid-template-rows: repeat(3, minmax(0, 1fr)); }
+  .overview-camera-column button { display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+  .overview-camera-column img { height: 100px; width: 100%; align-self: center; }
+  .room-panel { display: flex; flex-direction: column; }
+  .room-reading { flex: 1; }
+  .industrial-heading h2 { font-size: 11px; }
+  .industrial-heading > span { font-size: 10px; }
+  .machine-icon-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .machine-icon-button { padding: 4px 1px; gap: 1px; }
+  .machine-icon-asset { height: 26px; width: 36px; }
+}
+@media (min-width: 1800px) {
+  .overview-shell { max-width: none; padding: 4px 16px; }
+  .overview-shell > .overview-dashboard > header p { margin-top: 2px; }
+  .overview-shell > .overview-dashboard > header h1 { font-size: 18px; line-height: 24px; }
+  .overview-shell > :first-child { margin-bottom: 6px; }
+  .overview-shell > footer { margin-top: 6px; padding: 6px 0; }
+  .output-bars { height: 48px; margin: 6px 0; }
+  .output-unit > svg { max-width: 120px; }
+  .comparison-chart { height: 56px; }
+  .oil-tank { padding: 6px; }
+  .internal-gauge svg { max-width: 118px; }
+  .internal-power-grid { padding: 5px; }
+  .internal-gauge { padding: 3px; }
+  .internal-environment { gap: 6px; }
+  .room-reading { padding: 2px 8px; }
+  .internal-gauge h3 { font-size: 10px; }
+  .machine-icon-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .machine-unit-row { padding: 5px 4px; }
+  .machine-icon-button { min-height: 76px; }
+  .machine-icon-button span { font-size: 9px; line-height: 11px; }
+  .machine-icon-button small { font-size: 8px; line-height: 10px; }
+  .machine-icon-asset { height: 38px; width: 44px; }
+  .fleet-machines .machine-icon-button { padding-top: 1px; padding-bottom: 1px; }
+  .fleet-machines .machine-icon-button span { line-height: 10px; }
+  .room-weather-grid .room-reading { flex-direction: row; gap: 4px; }
+  .room-weather-grid .room-reading svg { width: 68px; flex-shrink: 0; }
+  .room-weather-grid .room-reading p { font-size: 24px; }
+  .oil-level { width: 94px; height: 94px; margin-top: 4px; }
+  .oil-support svg { max-width: 82px; }
+  .oil-tank { padding: 4px 6px; }
+}
+
+
 /* Portaled overlays inherit the root theme, just like routed pages. */
 html.dark header { background-color: #111c2e; }
 html.dark [role="dialog"], html.dark [role="menu"] { background-color: #1c2c43; }

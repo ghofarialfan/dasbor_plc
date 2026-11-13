@@ -3,9 +3,12 @@ import { useDemo } from '@/context/demo-context';
 import { DEMO_NOW } from '@/data/demo';
 import { dateTime } from '@/lib/utils';
 import { overviewEquipmentGroups } from '@/lib/overview-dashboard';
+import { FleetOutput } from '@/components/overview/fleet-output';
+import { FleetMachines } from '@/components/overview/fleet-machines';
+import { InternalEnvironment } from '@/components/overview/internal-environment';
+import { OilMonitoring } from '@/components/overview/oil-monitoring';
 import { StatusBadge, WarningBadge } from '@/components/shared';
-import { EquipmentWidget } from '@/components/equipment-widget';
-import { DashboardHistory } from '@/components/overview/dashboard-history';
+
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { DashboardMedia } from '@/components/overview/dashboard-media';
 
@@ -28,18 +31,13 @@ export function Overview() {
       <span className="text-muted">Pembacaan lokal · rentang tampilan bukan batas proteksi · target tidak mengubah telemetry</span>
       <div className="flex gap-3 font-semibold text-blue-700 dark:text-accent"><Link to="/gauge-widget">Pengaturan perangkat</Link><Link to="/virtual">Visualisasi sistem</Link></div>
     </div>
-    <div className="overview-workspace">
-      <div className="overview-equipment">
-        {groups.map(group => <section key={group.id} className={`overview-group overview-group-${group.id} min-w-0 rounded-xl border border-border bg-white dark:bg-surface p-2.5`} aria-labelledby={`overview-group-${group.id}`}>
-          <div className="mb-2 flex items-center justify-between gap-2"><h2 id={`overview-group-${group.id}`} className="text-xs font-semibold">{group.title}</h2><span className="text-[9px] text-muted">{group.count} channel</span></div>
-          <div className="overview-channel-grid">{group.cards.map(({ item, tags }) => <EquipmentWidget key={`${device.id}:${item.id}`} equipment={item} device={device} visibleTags={tags} compact />)}</div>
-        </section>)}
-      </div>
-      <aside className="overview-support min-w-0">
-        <DashboardHistory key={device.id} device={device} />
-        <DashboardMedia />
-      </aside>
+    <FleetOutput />
+    <div className="fleet-bottom">
+      <FleetMachines />
+      <InternalEnvironment />
+      <OilMonitoring />
+      <aside className="industrial-panel overview-camera-column"><div className="industrial-heading"><h2>CCTV & THERMAL</h2><span>Media referensi</span></div><DashboardMedia /></aside>
     </div>
-    <p className="text-[9px] text-muted">Seluruh nilai mengikuti genset aktif. Sinyal digital Aktif / Tidak aktif / — bukan indikator kesehatan menyeluruh. Detail / Atur menyediakan kualitas data, asumsi, dan target lokal.</p>
+    <p className="text-[9px] text-muted">Output dan ikon mencakup genset dalam filter site. Daya internal, suhu ruangan, dan oli mengikuti unit detail: {device.id}. Pengaturan hanya lokal, bukan kontrol PLC.</p>
   </div>;
 }

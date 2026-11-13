@@ -3,8 +3,8 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } 
 
 export const referenceMedia = [
   { file: 'genset-camera-01.png', title: 'Kamera genset 1' },
-  { file: 'genset-camera-02.png', title: 'Kamera genset 2' },
   { file: 'genset-thermal.jpg', title: 'Thermal' },
+  { file: 'genset-camera-02.png', title: 'Kamera genset 2' },
 ];
 
 function MediaImage({ file, title, enlarged = false, compact = false }: { file: string; title: string; enlarged?: boolean; compact?: boolean }) {
@@ -33,5 +33,5 @@ export function ReferenceMediaGallery({ columns = 3, compact = false }: { column
 }
 
 export function DashboardMedia() {
-  return <ReferenceMediaGallery compact />;
+  return <ReferenceMediaGallery columns={1} compact />;
 }

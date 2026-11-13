@@ -25,9 +25,9 @@ function collectOverviewComponents(node) {
   ts.forEachChild(node, collectOverviewComponents);
 }
 collectOverviewComponents(overviewAst);
-for (const name of ['EquipmentWidget', 'DashboardHistory']) assert.equal(overviewComponents.filter(tag => tag === name).length, 1, `${name} must be integrated once`);
+for (const name of ['FleetOutput', 'FleetMachines', 'InternalEnvironment', 'OilMonitoring', 'DashboardMedia']) assert.equal(overviewComponents.filter(tag => tag === name).length, 1, `${name} must be integrated once`);
 assert.ok(!overviewComponents.includes('SystemOverview') && !overviewComponents.includes('GaugeCard'), 'large diagram and duplicate gauges must not consume dashboard space');
-assert.ok(overviewSource.includes('overviewEquipmentGroups(device)') && overviewSource.includes('visibleTags={tags} compact'));
+assert.ok(overviewSource.includes('overviewEquipmentGroups(device)') && overviewSource.includes('fleet-bottom'));
 assert.ok(overviewSource.includes('alarm.deviceId === device.id') && overviewSource.includes('activity.deviceId === device.id'), 'Overview notifications belong to the active unit');
 const overviewHistorySource = await readFile(new URL('../src/components/overview/dashboard-history.tsx', import.meta.url), 'utf8');
 assert.ok(overviewHistorySource.includes('historyParameters.map(parameter => <ParameterHistory'));
@@ -46,7 +46,7 @@ const overviewCss = await readFile(new URL('../src/index.css', import.meta.url),
 assert.ok(overviewCss.includes('(min-width: 1800px) and (min-height: 900px)'));
 assert.ok(overviewCss.includes('(max-height: 999px)'));
 assert.ok(overviewHistorySource.includes('Tren analog · line chart') && overviewHistorySource.includes('Riwayat status digital · step chart 0/1'));
-assert.ok(!overviewCss.includes('overflow: hidden'), 'dashboard must not conceal overflowing readings');
+assert.ok(!/\.(?:overview-dashboard|fleet-bottom|industrial-panel)\s*\{[^}]*overflow:\s*hidden/.test(overviewCss), 'dashboard must not conceal overflowing readings; circular tank clips only its liquid');
 assert.ok(alertsSource.includes('Notifikasi site') && alertsSource.includes('Site terpilih · seluruh unit'));
 assert.ok(alertsSource.includes('max-h-64 overflow-y-auto') && alertsSource.includes('tabIndex={0}'));
 assert.ok(alertsSource.includes('[...filteredActivities].sort('), 'activity ordering must not mutate context');
@@ -426,6 +426,40 @@ assert.deepEqual(layout.overviewConnections.filter(entry => entry.id.includes('-
 assert.ok(layout.overviewConnections.every(entry => entry.certainty !== 'verified'), 'presentation adjustments do not assert physical verification');
 console.log('PASS: aligned shafts, consistent equipment sizes, non-overlapping labels, diagram bounds and conceptual connections.');
 const dataUrl = `data:text/javascript;base64,${Buffer.from(js).toString('base64')}`;
+const weatherModel = await moduleFrom('../src/lib/overview-weather.ts');
+assert.deepEqual(weatherModel.weatherForSite('site-a'), { temperature: 30, humidity: 72, condition: 'Berawan' });
+assert.deepEqual(weatherModel.weatherForSite('site-b'), { temperature: 28, humidity: 84, condition: 'Hujan ringan' });
+assert.deepEqual(weatherModel.weatherForSite(devices[0].siteId), weatherModel.weatherForSite(devices[2].siteId));
+assert.deepEqual(weatherModel.weatherForSite(devices[1].siteId), weatherModel.weatherForSite(devices[3].siteId));
+for (const siteId of ['missing', '', 'toString', '__proto__']) assert.equal(weatherModel.weatherForSite(siteId), null);
+for (const device of devices) {
+  const snapshot = JSON.stringify(device);
+  const weather = weatherModel.weatherForSite(device.siteId);
+  assert.ok(weather.humidity >= 0 && weather.humidity <= 100);
+  assert.deepEqual(weatherModel.weatherForSite({ ...device, online: !device.online, telemetry: { ...device.telemetry, roomTemperature: 99 } }.siteId), weather);
+  assert.equal(JSON.stringify(device), snapshot);
+}
+console.log('PASS: stable per-site illustrative weather, offline availability, unknown-site fallback and telemetry independence.');
+const fleetModel = await moduleFrom('../src/lib/overview-fleet.ts', { "'@/data/demo'": JSON.stringify(dataUrl) });
+assert.deepEqual(fleetModel.fleetTotal(devices), { value: 27, complete: false, available: 3 });
+assert.deepEqual(fleetModel.fleetTotal([devices[3]]), { value: null, complete: false, available: 0 });
+assert.equal(fleetModel.outputValue(devices[2], 'power'), 0);
+assert.equal(fleetModel.outputValue(devices[3], 'current'), null);
+const fleetRows = fleetModel.fleetHistory(devices);
+assert.equal(fleetRows.length, 13);
+assert.ok(fleetRows.every(row => row['GEN-004-power'] === null && row['GEN-004-voltage'] === null));
+assert.equal(fleetRows.at(-1)['GEN-001-power'], fleetModel.outputValue(devices[0], 'power'));
+for (const definition of fleetModel.internalPowerDefinitions) {
+  assert.ok(definition.normal >= 0 && definition.normal <= definition.max);
+  assert.equal(fleetModel.internalPower(devices[3], definition.normal), null);
+  assert.equal(fleetModel.internalPower(devices[2], definition.normal), 0);
+}
+assert.equal(fleetModel.oilLevel(devices[3], 'oil19'), null);
+assert.equal(fleetModel.oilLevel(devices[0], 'oil19'), 80);
+assert.equal(fleetModel.oilLevel(devices[0], 'oil20'), 65);
+assert.ok(fleetModel.validLocalTargets({ 'GEN-001:oil19': 75 }));
+for (const invalid of [{ 'GEN-001:oil19': 101 }, { 'GEN-001:oil20': -1 }, { 'GEN-001:oil19': NaN }, { 'LSL-19': 75 }, [], null]) assert.equal(fleetModel.validLocalTargets(invalid), false);
+console.log('PASS: fleet output registry consistency, partial totals, null offline history, separate internal/oil fixtures and local target validation.');
 const q = await moduleFrom('../src/data/queries.ts', { "'./demo'": JSON.stringify(dataUrl) });
 assert.ok(q.filterDevices('site-a', '', 'running').every(d => d.siteId === 'site-a' && d.status === 'running'));
 assert.deepEqual(q.filterDevices('all', 'gen-004', 'offline').map(d => d.id), ['GEN-004']);
@@ -516,7 +550,8 @@ assert.ok(controlContext.includes('if (!targetDevice || !ids.has(id)) return fal
 assert.ok(controlUi.includes('disabled={!device.online}'));
 assert.ok(controlUi.includes('controlCopy.apply') && controlUi.includes('setConfirming(true)'));
 assert.ok(gaugeUi.includes('<GaugeTargetControl device={device} parameter={parameter} measured={value} />'));
-assert.ok(overviewSource.includes('equipment={item} device={device} visibleTags={tags} compact'));
+const fleetMachinesUi = await readFile(new URL('../src/components/overview/fleet-machines.tsx', import.meta.url), 'utf8');
+assert.ok(fleetMachinesUi.includes('equipment={item} device={device}') && fleetMachinesUi.includes('item.deviceId === unit.id'));
 assert.ok(!overviewSource.includes('DemoControls'));
 assert.ok(settingsUi.includes('device={d} parameter={w.parameter}'));
 assert.ok(!settingsUi.includes('NUMERIC_PARAMS.map(p => <GaugeCard'), 'settings must not duplicate the equipment gauges in a standalone panel');
