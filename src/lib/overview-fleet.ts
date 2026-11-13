@@ -6,6 +6,15 @@ export function outputValue(device: Device, channel: 'current' | 'power'): numbe
   const reading = readingsForInstrument(device, 'PM-01').find(r => r.channel === channel);
   return reading?.quality === 'simulated' && typeof reading.value === 'number' ? reading.value : null;
 }
+// Presentation-only PF fixtures, not PM-01 readings or values calculated from V/A.
+const powerFactorFixtures: Readonly<Record<string, number>> = {
+  'GEN-001': 0.85, 'GEN-002': 0.88, 'GEN-003': 0.86, 'GEN-004': 0.84,
+};
+export function illustrativePowerFactor(device: Device): number | null {
+  if (!device.online || device.status !== 'running') return null;
+  return Object.hasOwn(powerFactorFixtures, device.id) ? powerFactorFixtures[device.id] : null;
+}
+
 export function fleetTotal(devices: Device[]) {
   const values = devices.map(device => outputValue(device, 'power'));
   const available = values.filter((value): value is number => value !== null);
@@ -17,6 +26,8 @@ export function fleetHistory(devices: Device[]) {
     const row: Record<string, number | string | null> = { timestamp: sample.timestamp, time: new Date(sample.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }) };
     devices.forEach((device, unit) => {
       row[`${device.id}-voltage`] = archives[unit][index]?.voltage ?? null;
+      // Constant illustrative comparison over the window, not recorded PF history.
+      row[`${device.id}-pf`] = illustrativePowerFactor(device);
       for (const channel of demoChannels['PM-01']) {
         const reading = demoChannelReading(device, 'PM-01', channel, sample.timestamp);
         row[`${device.id}-${channel.id}`] = typeof reading.value === 'number' ? reading.value : null;

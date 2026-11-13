@@ -441,12 +441,35 @@ for (const device of devices) {
 }
 console.log('PASS: stable per-site illustrative weather, offline availability, unknown-site fallback and telemetry independence.');
 const fleetModel = await moduleFrom('../src/lib/overview-fleet.ts', { "'@/data/demo'": JSON.stringify(dataUrl) });
+assert.equal(fleetModel.illustrativePowerFactor(devices[0]), 0.85);
+assert.equal(fleetModel.illustrativePowerFactor(devices[1]), 0.88);
+assert.equal(fleetModel.illustrativePowerFactor(devices[2]), null);
+assert.equal(fleetModel.illustrativePowerFactor(devices[3]), null);
+for (const device of devices) {
+  const before = JSON.stringify(device);
+  const running = { ...device, online: true, status: 'running' };
+  const pf = fleetModel.illustrativePowerFactor(running);
+  assert.ok(pf >= 0 && pf <= 1);
+  assert.equal(fleetModel.illustrativePowerFactor({ ...running, telemetry: { ...device.telemetry, voltage: 999 } }), pf);
+  assert.equal(fleetModel.illustrativePowerFactor({ ...running, online: false }), null);
+  assert.equal(fleetModel.illustrativePowerFactor({ ...running, status: 'unknown' }), null);
+  assert.equal(JSON.stringify(device), before);
+}
+for (const id of ['GEN-999', 'toString', '__proto__']) assert.equal(fleetModel.illustrativePowerFactor({ ...devices[0], id }), null);
+console.log('PASS: illustrative per-unit PF, bounded stable fixtures, standby/offline/unknown guards and telemetry independence.');
 assert.deepEqual(fleetModel.fleetTotal(devices), { value: 27, complete: false, available: 3 });
 assert.deepEqual(fleetModel.fleetTotal([devices[3]]), { value: null, complete: false, available: 0 });
 assert.equal(fleetModel.outputValue(devices[2], 'power'), 0);
 assert.equal(fleetModel.outputValue(devices[3], 'current'), null);
 const fleetRows = fleetModel.fleetHistory(devices);
 assert.equal(fleetRows.length, 13);
+for (const device of devices) {
+  assert.ok(fleetRows.every(row => row[`${device.id}-pf`] === fleetModel.illustrativePowerFactor(device)));
+}
+assert.deepEqual(fleetModel.fleetHistory([]), []);
+assert.ok(fleetModel.fleetHistory([devices[3]]).every(row => row['GEN-004-pf'] === null));
+assert.ok(fleetModel.fleetHistory([devices[1]]).every(row => row['GEN-002-pf'] === 0.88));
+console.log('PASS: PF comparison shares card fixtures across all 13 samples, site subsets and empty/offline fleets.');
 assert.ok(fleetRows.every(row => row['GEN-004-power'] === null && row['GEN-004-voltage'] === null));
 assert.equal(fleetRows.at(-1)['GEN-001-power'], fleetModel.outputValue(devices[0], 'power'));
 for (const definition of fleetModel.internalPowerDefinitions) {

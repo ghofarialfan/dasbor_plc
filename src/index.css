@@ -219,7 +219,9 @@
   .overview-shell > footer { margin-top: 6px; padding: 6px 0; }
   .output-bars { height: 48px; margin: 6px 0; }
   .output-unit > svg { max-width: 120px; }
-  .comparison-chart { height: 56px; }
+  .comparison-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .comparison-section { min-width: 0; }
+  .comparison-chart { height: 86px; }
   .oil-tank { padding: 6px; }
   .internal-gauge svg { max-width: 118px; }
   .internal-power-grid { padding: 5px; }
